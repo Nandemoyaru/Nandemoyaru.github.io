@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漢方薬処方選択支援ツール</title>
+    <style>
+        :root {
+            --primary: #2c5d3f;
+            --primary-light: #e8f0ec;
+            --secondary: #4a7c59;
+            --accent: #d97724;
+            --bg: #f8faf9;
+            --card-bg: #ffffff;
+            --text: #2b2b2b;
+            --border: #dcdcdc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        p.subtitle {
+            color: #666;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 850px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--primary-light);
+        }
+
+        .section-group {
+            margin-bottom: 20px;
+        }
+
+        .section-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+            color: var(--secondary);
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            background: #f4f6f5;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: var(--primary-light);
+        }
+
+        .checkbox-item input {
+            margin-right: 6px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .radio-item input {
+            margin-right: 5px;
+        }
+
+        .btn-action {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 15px;
+        }
+
+        .btn-action:hover {
+            background: var(--secondary);
+        }
+
+        .result-item {
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--primary);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+
+        .result-item.high-match {
+            border-left-color: var(--accent);
+            background: #fffdfa;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .kampo-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .match-rate {
+            font-size: 0.85rem;
+            font-weight: bold;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        .result-item.high-match .match-rate {
+            background: #fce8d5;
+            color: var(--accent);
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 8px 0;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: #eee;
+            color: #555;
+        }
+
+        .tag.sho {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .detail-row {
+            font-size: 0.88rem;
+            margin-bottom: 5px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .caution-text {
+            color: #c62828;
+            font-size: 0.82rem;
+            margin-top: 6px;
+            background: #ffebee;
+            padding: 6px;
+            border-radius: 4px;
+        }
+
+        .placeholder-text {
+            color: #888;
+            text-align: center;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>漢方薬処方選択支援ツール</h1>
+        <p class="subtitle">患者の主訴・症状および病態・体質（気血水・虚実）に基づく処方候補一覧</p>
+    </header>
+
+    <div class="main-content">
+        <!-- 入力セクション -->
+        <div class="card">
+            <h2 class="card-title">1. 患者情報・所見の入力</h2>
+
+            <!-- 虚実・体質 -->
+            <div class="section-group">
+                <span class="section-label">体質（虚実）</span>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="kyojitsu" value="虚証"> 虚証（体力低下・線が細い）</label>
+                    <label class="radio-item"><input type="radio" name="kyojitsu" value="中間" checked> 中間証</label>
+                    <label class="radio-item"><input type="radio" name="kyojitsu" value="実証"> 実証（体力充実・がっしり）</label>
+                </div>
+            </div>
+
+            <!-- 熱寒 -->
+            <div class="section-group">
+                <span class="section-label">寒熱</span>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="kannetsu" value="寒" > 寒（冷え症・温まると改善）</label>
+                    <label class="radio-item"><input type="radio" name="kannetsu" value="平" checked> 平/どちらでもない</label>
+                    <label class="radio-item"><input type="radio" name="kannetsu" value="熱"> 熱（のぼせ・炎症・暑がり）</label>
+                </div>
+            </div>
+
+            <!-- 主訴・領域 -->
+            <div class="section-group">
+                <span class="section-label">主な症状・病態領域</span>
+                <div class="checkbox-grid">
+                    <label class="checkbox-item"><input type="checkbox" class="symptom-check" value="感冒・呼吸器"> 感冒・咳嗽</label>
+                    <label class="checkbox-item"><input type="checkbox" class="symptom-check" value="胃腸障害"> 胃腸障害・食欲不振</label>
+                    <label class="checkbox-item"><input type="checkbox" class="symptom-check" value="精神・神経症状"> 精神不安・不眠・不穏</label>
+                    <label class="checkbox-item"><input type="checkbox" class="symptom-check" value="婦人科系症状"> 月経不順・冷え症</label>
+                    <label class="checkbox-item"><input type="checkbox" class="symptom-check" value="疼痛・関節痛"> 頭痛・関節痛・腰痛</label>
+                    <label class="checkbox-item"><input type="checkbox" class="symptom-check" value="水滞・浮腫"> むくみ・めまい</label>
+                    <label class="checkbox-item"><input type="checkbox" class="symptom-check" value="皮膚症状"> 皮膚炎・痒み・湿疹</label>
+                    <label class="checkbox-item"><input type="checkbox" class="symptom-check" value="泌尿器症状"> 頻尿・排尿障害</label>
+                </div>
+            </div>
+
+            <!-- 気血水分析用の症状 -->
+            <div class="section-group">
+                <span class="section-label">細部症状・随伴所見（気血水判定用）</span>
+                <div class="checkbox-grid">
+                    <label class="checkbox-item"><input type="checkbox" class="detail-check" value="倦怠感"> 全身倦怠感</label>
+                    <label class="checkbox-item"><input type="checkbox" class="detail-check" value="イライラ"> イライラ・怒りっぽい</label>
+                    <label class="checkbox-item"><input type="checkbox" class="detail-check" value="動悸"> 動悸・不安感</label>
+                    <label class="checkbox-item"><input type="checkbox" class="detail-check" value="皮膚乾燥"> 皮膚の乾燥・カサつき</label>
+                    <label class="checkbox-item"><input type="checkbox" class="detail-check" value="肩こり"> 頑固な肩こり</label>
+                    <label class="checkbox-item"><input type="checkbox" class="detail-check" value="頭重感"> 頭重感・吐き気</label>
+                    <label class="checkbox-item"><input type="checkbox" class="detail-check" value="便秘"> 便秘傾向</label>
+                    <label class="checkbox-item"><input type="checkbox" class="detail-check" value="下痢"> 軟便・下痢傾向</label>
+                </div>
+            </div>
+
+            <button type="button" class="btn-action" onclick="analyzeAndRecommend()">処方候補の分析・抽出</button>
+        </div>
+
+        <!-- 出力セクション -->
+        <div class="card">
+            <h2 class="card-title">2. 推奨処方一覧・詳細情報</h2>
+            <div id="resultsContainer">
+                <div class="placeholder-text">
+                    条件を選択し、「処方候補の分析・抽出」を押してください。
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 各パートの定義
+const kampoDatabase_Part1 = [
+    {
+        id: "TJ-1",
+        name: "葛根湯（かっこんとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "寒",
+        targetSymptoms: ["感冒・呼吸器", "疼痛・関節痛"],
+        details: ["倦怠感", "肩こり"],
+        sho: "表寒虚実中間〜実証・無汗",
+        composition: "葛根, 麻黄, 桂皮, 芍薬, 甘草, 生姜, 大棗",
+        efficacy: "感冒の初期、頭痛、肩こり、筋肉痛、手鼻風邪",
+        caution: "麻黄含有（胃腸障害、動悸、血圧上昇に注意）。甘草含有（偽アルドステロン症注意）。"
+    },
+    {
+        id: "TJ-2",
+        name: "葛根湯加川芎辛夷（かっこんとうかせんきゅうしんい）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "寒",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: ["頭重感"],
+        sho: "表寒虚実中間〜実証・鼻塞がり",
+        composition: "葛根, 麻黄, 桂皮, 芍薬, 甘草, 生姜, 大棗, 川芎, 辛夷",
+        efficacy: "慢性鼻炎、鼻づまり、蓄膿症（副鼻腔炎）",
+        caution: "麻黄・甘草含有。胃腸虚弱者には慎重投与。"
+    },
+    {
+        id: "TJ-3",
+        name: "乙字湯（おつじとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["疼痛・関節痛", "皮膚症状"],
+        details: ["便秘"],
+        sho: "気逆・瘀血・下焦湿熱（実証〜中間）",
+        composition: "当帰, 柴胡, 黄芩, 甘草, 升麻, 大黄",
+        efficacy: "痔核（いぼ痔）、きれ痔、軽度の便秘",
+        caution: "大黄含有（下痢・腹痛の可能性、妊婦慎重投与）。甘草含有。"
+    },
+    {
+        id: "TJ-5",
+        name: "安中散（あんちゅうさん）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "寒",
+        targetSymptoms: ["胃腸障害", "疼痛・関節痛"],
+        details: [],
+        sho: "胃寒・気逆（虚証）",
+        composition: "桂皮, 延胡索, 牡蠣, 茴香, 甘草, 縮砂, 良姜",
+        efficacy: "神経性胃炎、慢性胃炎、胃痛、胸やけ、吐き気",
+        caution: "甘草含有。長期間の連用時は偽アルドステロン症に注意。"
+    },
+    {
+        id: "TJ-6",
+        name: "十味敗毒湯（じゅうみはいどくとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["皮膚症状"],
+        details: [],
+        sho: "風湿熱毒（中間証）",
+        composition: "桔梗, 柴胡, 川芎, 茯苓, 桜皮, 防風, 独活, 甘草, 生姜, 朴樕",
+        efficacy: "化膿性皮膚疾患、急性湿疹、じんましん、水虫",
+        caution: "甘草含有。体質により胃部不快感や皮膚炎の初期増悪があり得る。"
+    },
+    {
+        id: "TJ-7",
+        name: "八味地黄丸（はちみじおうがん）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "寒",
+        targetSymptoms: ["泌尿器症状", "疼痛・関節痛", "水滞・浮腫"],
+        details: ["皮膚乾燥"],
+        sho: "腎陽虚・下焦虚寒",
+        composition: "地黄, 山茱萸, 山薬, 沢瀉, 茯苓, 牡丹皮, 桂皮, 附子",
+        efficacy: "下肢痛、腰痛、しびれ、高齢者のかすみ目、頻尿、排尿困難",
+        caution: "附子含有（のぼせ、心悸亢進注意）。地黄含有のため胃腸虚弱者には消化器症状悪化に注意。"
+    },
+    {
+        id: "TJ-8",
+        name: "大柴胡湯（だいさいことう）",
+        kyojitsu: ["実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["胃腸障害", "精神・神経症状"],
+        details: ["イライラ", "便秘"],
+        sho: "少陽陽明合病・胸脇苦満・実証",
+        composition: "柴胡, 黄芩, 芍薬, 半夏, 枳実, 大棗, 生姜, 大黄",
+        efficacy: "胆のう炎、黄疸、胆石症、高血圧に伴う肩こり・頭痛、便秘、肥満症",
+        caution: "大黄含有（下痢、腹痛、妊婦投与注意）。体質虚弱者には投与を避ける。"
+    },
+    {
+        id: "TJ-9",
+        name: "小柴胡湯（しょうさいことう）",
+        kyojitsu: ["中間"],
+        kannetsu: "平",
+        targetSymptoms: ["感冒・呼吸器", "胃腸障害"],
+        details: ["倦怠感"],
+        sho: "少陽病期・胸脇苦満・往来寒熱・口苦",
+        composition: "柴胡, 黄芩, 半夏, 人参, 甘草, 大棗, 生姜",
+        efficacy: "感冒後期の症状、胃腸虚弱、疲労感、急性胃腸炎、食欲不振",
+        caution: "間質性肺炎・肝機能障害に厳重注意。小柴胡湯による間質性肺炎の発現歴やインターフェロン製剤投与中の患者は禁忌。"
+    },
+    {
+        id: "TJ-10|TJ-11",
+        name: "柴胡桂枝湯（さいこけいしとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["感冒・呼吸器", "胃腸障害", "疼痛・関節痛"],
+        details: ["倦怠感"],
+        sho: "太陽少陽合病・腹皮拘急",
+        composition: "柴胡, 黄芩, 半夏, 人参, 甘草, 大棗, 生姜, 桂皮, 芍薬",
+        efficacy: "発熱、寒気、関節痛、胃腸炎、腹痛を伴う感冒中期・風邪の遷延",
+        caution: "甘草含有。小柴胡湯と同様に間質性肺炎の可能性に配慮する。"
+    },
+    {
+        id: "TJ-12",
+        name: "柴胡加竜骨牡蛎湯（さいこかりゅうこつぼれいとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["精神・神経症状"],
+        details: ["イライラ", "動悸", "便秘"],
+        sho: "気逆・気鬱・臍上悸・胸脇苦満",
+        composition: "柴胡, 黄芩, 半夏, 茯苓, 桂皮, 竜骨, 牡蠣, 大棗, 生姜, 大黄",
+        efficacy: "高血圧に伴う精神不安、不眠、神経症、動悸、小児夜泣き",
+        caution: "大黄含有。胃腸虚弱者や著しい下痢傾向の患者には注意。"
+    },
+    {
+        id: "TJ-15",
+        name: "黄連解毒湯（おうれんげどくとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["精神・神経症状", "皮膚症状"],
+        details: ["イライラ", "動悸"],
+        sho: "上焦・三焦の実熱・血熱",
+        composition: "黄連, 黄芩, 黄柏, 山梔子",
+        efficacy: "鼻出血、不眠症、神経症、胃炎、二日酔い、めまい、湿疹・皮膚炎",
+        caution: "山梔子長期連用による腸間膜静脈硬化症のリスク評価。胃腸虚弱で冷えが強い場合は適さない。"
+    },
+    {
+        id: "TJ-16",
+        name: "半夏厚朴湯（はんげこうぼくとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["感冒・呼吸器", "精神・神経症状"],
+        details: ["動悸", "頭重感"],
+        sho: "梅核気（咽喉頭異常感症）・気鬱・気逆",
+        composition: "半夏, 茯苓, 厚朴, 蘇葉, 生姜",
+        efficacy: "気分がふさいで咽喉・食道部に異物感があり、動悸、めまい、吐き気などを伴うもの",
+        caution: "甘草不含。乾燥症状（陰虚）が強い患者には脱水を助長しないよう観察を要する。"
+    },
+    {
+        id: "TJ-17",
+        name: "五苓散（ごれいさん）",
+        kyojitsu: ["虚証", "中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["水滞・浮腫", "胃腸障害", "疼痛・関節痛"],
+        details: ["頭重感"],
+        sho: "水滞・口渇・尿量減少・頭痛",
+        composition: "沢瀉, 茯苓, 白朮, 猪苓, 桂皮",
+        efficacy: "水様性下痢、急性胃腸炎、暑気気あたり、むくみ、頭痛、二日酔い",
+        caution: "甘草不含。利尿作用・水分代謝の調整機能を持つが、著明な脱水状態の評価は適時行う。"
+    },
+    {
+        id: "TJ-19",
+        name: "小青竜湯（しょうせいりゅうとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "寒",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: [],
+        sho: "表寒水飲・水性鼻汁・喘鳴",
+        composition: "麻黄, 芍薬, 乾姜, 甘草, 細辛, 桂皮, 五味子, 半夏",
+        efficacy: "気管支炎、気管支ぜんそく、鼻炎、アレルギー性鼻炎、むくみ、感冒",
+        caution: "麻黄・甘草含有。高齢者や循環器障害（高血圧・狭心症等）のある患者への投与は注意。"
+    },
+    {
+        id: "TJ-23",
+        name: "当帰芍薬散（とうきしゃくやくさん）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["婦人科系症状", "水滞・浮腫", "疼痛・関節痛"],
+        details: ["頭重感"],
+        sho: "血虚・水滞・脾腎陽虚",
+        composition: "当帰, 芍薬, 川芎, 白朮, 茯苓, 沢瀉",
+        efficacy: "月経不順、月経異常、更年期障害、冷え症、むくみ、貧血、頭重",
+        caution: "甘草不含。胃腸が著しく虚弱な患者では食欲不振、悪心、腹痛等の胃腸障害に注意。"
+    }
+];
+
+const kampoDatabase_Part2 = [
+    {
+        id: "TJ-26",
+        name: "桂枝加芍薬湯（けいしかしゃくやくとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "疼痛・関節痛"],
+        details: ["下痢"],
+        sho: "脾胃虚寒・腹皮拘急・急迫性腹痛",
+        composition: "桂皮, 芍薬, 甘草, 大棗, 生姜",
+        efficacy: "腹部膨満感のあるものの次の諸症：しぶり腹、腹痛、下痢、便秘",
+        caution: "甘草含有（偽アルドステロン症注意）。過敏性腸症候群（IBS）の下痢型・便秘型双方に応用可能。"
+    },
+    {
+        id: "TJ-27",
+        name: "麻黄湯（まおうとう）",
+        kyojitsu: ["実証"],
+        kannetsu: "寒",
+        targetSymptoms: ["感冒・呼吸器", "疼痛・関節痛"],
+        details: [],
+        sho: "太陽病本証・表実・無汗・悪寒",
+        composition: "麻黄, 桂皮, 杏仁, 甘草",
+        efficacy: "感冒、インフルエンザ（初期）、関節痛、喘息、鼻づまり",
+        caution: "麻黄高容量含有（交感神経刺激作用、循環器疾患・甲状腺機能亢進症・前立腺肥大による排尿障害者には禁忌〜発汗・心悸亢進注意）。甘草含有。"
+    },
+    {
+        id: "TJ-28",
+        name: "越婢加朮湯（えっぴかじゅつとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["水滞・浮腫", "疼痛・関節痛", "皮膚症状"],
+        details: [],
+        sho: "風水・風湿熱・口渇・浮腫",
+        composition: "麻黄, 石膏, 生姜, 大棗, 甘草, 白朮",
+        efficacy: "腎炎、ネフローゼ、急性関節リウマチ、湿疹・皮膚炎、夜尿症",
+        caution: "麻黄・石膏・甘草含有。胃腸虚弱者では胃部不快感・食欲不振が出現しやすい。"
+    },
+    {
+        id: "TJ-30",
+        name: "真武湯（しんぶとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["水滞・浮腫", "胃腸障害", "精神・神経症状"],
+        details: ["倦怠感", "頭重感", "下痢"],
+        sho: "脾腎陽虚・水滞・顕著な冷えと全身倦怠感",
+        composition: "茯苓, 芍薬, 白朮, 生姜, 附子",
+        efficacy: "新陳代謝機能の低下したものの次の諸症：冷え症、下痢、めまい、慢性胃腸炎、慢性腎炎",
+        caution: "附子含有（動悸、のぼせ、心悸亢進などの附子中毒症状に注意）。甘草不含。"
+    },
+    {
+        id: "TJ-37",
+        name: "半夏白朮天麻湯（はんげびゃくじゅくてんまとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["精神・神経症状", "胃腸障害", "水滞・浮腫"],
+        details: ["頭重感"],
+        sho: "脾虚生痰・風痰上擾・頭痛・めまい",
+        composition: "半夏, 白朮, 天麻, 茯苓, 陳皮, 黄耆, 人参, 黄柏, 生姜, 乾姜, 麦芽, 神麹",
+        efficacy: "胃腸が弱く冷え症の人で、頭痛、頭重、めまい、立ちくらみ、嘔吐などを伴うもの",
+        caution: "甘草不含。胃腸虚弱に伴う内耳性めまい（メニエール病等）によく適応。"
+    },
+    {
+        id: "TJ-43",
+        name: "六君子湯（りっくんしとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害"],
+        details: ["倦怠感", "頭重感"],
+        sho: "脾胃気虚・水飲滞留（胃伸長・胃生体機能低下）",
+        composition: "人参, 蒼朮, 茯苓, 半夏, 陳皮, 甘草, 大棗, 生姜",
+        efficacy: "胃腸の弱いものの次の諸症：胃炎、胃痛、消化不良、食欲不振、胃もたれ、嘔吐",
+        caution: "甘草含有。グレリン分泌促進作用などが報告されており、機能性ディスペプシア（FD）の標準処方の一つ。"
+    },
+    {
+        id: "TJ-48",
+        name: "十全大補湯（じゅうぜんだいほとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["感冒・呼吸器", "皮膚症状"],
+        details: ["倦怠感", "皮膚乾燥"],
+        sho: "気血両虚・貧血・虚弱・冷え",
+        composition: "人参, 黄耆, 白朮, 茯苓, 当帰, 川芎, 芍薬, 地黄, 桂皮, 甘草",
+        efficacy: "病後・術後の体力低下、疲労倦怠、貧血、手足の冷え、ねあせ、皮膚の乾燥",
+        caution: "地黄含有（消化器症状悪化の可能性）。甘草含有。ガン化学療法・放射線療法後のフレイル・疲労軽減等にも多用。"
+    },
+    {
+        id: "TJ-50",
+        name: "荊芥連翹湯（けいがいれんぎょうとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器", "皮膚症状"],
+        details: [],
+        sho: "風熱腺病質・清熱解毒・駆瘀血",
+        composition: "荊芥, 連翹, 防風, 当帰, 川芎, 芍薬, 柴胡, 黄芩, 黄柏, 山梔子, 桔梗, 枳実, 甘草, 乾地黄, 薄荷",
+        efficacy: "慢性鼻炎、慢性副鼻腔炎（蓄膿症）、慢性トンスル炎、にきび",
+        caution: "山梔子長期投与による腸間膜静脈硬化症に配慮。甘草含有。"
+    },
+    {
+        id: "TJ-54",
+        name: "抑肝散（よくかんさん）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["精神・神経症状"],
+        details: ["イライラ"],
+        sho: "肝気鬱結・肝風内動・神経過敏・筋緊張",
+        composition: "柴胡, 甘草, 川芎, 当帰, 白朮, 茯苓, 鉤藤",
+        efficacy: "神経症、不眠症、小児夜泣き、小児かんむし、認知症に伴うBPSD（興奮・抑うつ）",
+        caution: "甘草含有（低カリウム血症・偽アルドステロン症のモニタリング推奨）。認知症BPSDへの効果が臨床実証されている。"
+    },
+    {
+        id: "TJ-62",
+        name: "防風通聖散（ぼうふうつうしょうさん）",
+        kyojitsu: ["実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["胃腸障害", "皮膚症状", "水滞・浮腫"],
+        details: ["便秘"],
+        sho: "表裏宜通・腹部鼓満・充実熱証",
+        composition: "防風, 防己, 麻黄, 石膏, 大黄, 芒硝, 荊芥, 連翹, 当帰, 川芎, 芍薬, 山梔子, 黄芩, 桔梗, 桔梗, 蒼朮, 甘草, 生姜",
+        efficacy: "腹部に皮下脂肪が多く便秘がちなものの次の諸症：高血圧や肥満に伴う動悸・肩こり・のぼせ、肥満症、便秘、むくみ",
+        caution: "大黄・芒硝（下痢注意）、麻黄（循環器負荷）、山梔子（腸間膜静脈硬化症）、甘草含有。多剤重複成分に十分注意。"
+    },
+    {
+        id: "TJ-83",
+        name: "抑肝散加陳皮半夏（よくかんさんかちんぴはんげ）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["精神・神経症状", "胃腸障害"],
+        details: ["イライラ", "頭重感"],
+        sho: "肝気鬱結・脾虚痰湿",
+        composition: "柴胡, 甘草, 川芎, 当帰, 白朮, 茯苓, 鉤藤, 陳皮, 半夏",
+        efficacy: "抑肝散の適応領域に加え、胃腸虚弱、悪心、嘔吐、気管支炎などを伴うもの",
+        caution: "抑肝散と比較して胃腸障害を起こしにくく、長期間使いやすい。甘草含有。"
+    },
+    {
+        id: "TJ-108",
+        name: "人参養栄湯（にんじんようえいとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["感冒・呼吸器", "精神・神経症状", "皮膚症状"],
+        details: ["倦怠感", "動悸", "皮膚乾燥"],
+        sho: "気血両虚・肺脾心虚・慢性咳嗽・虚労",
+        composition: "人参, 黄耆, 当帰, 芍薬, 地黄, 白朮, 茯苓, 桂皮, 陳皮, 遠志, 五味子, 甘草",
+        efficacy: "思考力低下、食欲不振、手足の冷え、貧血、ねあせ、咳嗽（咳）を伴う病後の体力低下",
+        caution: "十全大補湯と酷似するが、遠志・五味子・陳皮を含み呼吸器症状や認知機能低下・抑うつ傾向を兼ねる場合に最適。地黄・甘草含有。"
+    },
+    {
+        id: "TJ-114",
+        name: "柴苓湯（さいれいとう）",
+        kyojitsu: ["中間"],
+        kannetsu: "平",
+        targetSymptoms: ["水滞・浮腫", "胃腸障害", "感冒・呼吸器"],
+        details: ["下痢"],
+        sho: "少陽病期＋水滞（小柴胡湯＋五苓散）",
+        composition: "柴胡, 黄芩, 半夏, 人参, 甘草, 大棗, 生姜, 沢瀉, 茯苓, 白朮, 猪苓, 桂皮",
+        efficacy: "水様性下痢、急性胃腸炎、暑気あたり、むくみ、ステロイド減量化（自己免疫疾患など）",
+        caution: "小柴胡湯成分を含むため間質性肺炎の観察が必須。甘草含有。"
+    },
+    {
+        id: "TJ-125",
+        name: "麦門冬湯（ばくもんどうとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: [],
+        sho: "肺陰虚・胃陰虚・気逆・激しい乾咳",
+        composition: "麦門冬, 半夏, 人参, 甘草, 大棗, 粳米",
+        efficacy: "痰の切れにくい咳、気管支炎、気管支ぜんそく、咽頭の乾燥感・異物感",
+        caution: "甘草含有。空咳（乾性咳嗽）のファーストラインとして定着している。"
+    },
+    {
+        id: "TJ-137",
+        name: "加味帰脾湯（かみきひとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "熱",
+        targetSymptoms: ["精神・神経症状", "婦人科系症状"],
+        details: ["倦怠感", "イライラ", "動悸"],
+        sho: "心脾両虚・気血両虚・身熱",
+        composition: "人参, 黄耆, 白朮, 茯苓, 当帰, 竜眼肉, 酸棗仁, 遠志, 木香, 甘草, 生姜, 大棗, 柴胡, 山梔子",
+        efficacy: "虚弱体質で血色の悪いものの次の諸症：不眠症、精神不安、神経症、貧血、微熱",
+        caution: "山梔子長期連用リスクの監視。帰脾湯に柴胡・山梔子を加えて熱感を解消する効果を持つ。甘草含有。"
+    }
+];
+
+const kampoDatabase_Part3 = [
+    {
+        id: "TJ-18",
+        name: "桂枝加朮附湯（けいしかじゅつぶとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["疼痛・関節痛", "水滞・浮腫"],
+        details: [],
+        sho: "風寒湿痺・陽虚水滞・関節冷痛",
+        composition: "桂皮, 芍薬, 蒼朮, 生姜, 大棗, 甘草, 附子",
+        efficacy: "関節痛、神経痛、リウマチ、筋肉痛",
+        caution: "附子含有（動悸・のぼせ等の中毒症状に注意）。甘草含有。"
+    },
+    {
+        id: "TJ-20",
+        name: "防己黄耆湯（ぼういおうぎとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["水滞・浮腫", "疼痛・関節痛"],
+        details: ["倦怠感"],
+        sho: "表虚水滞・汗出悪風・水腫・肥満",
+        composition: "防己, 黄耆, 白朮, 太棗, 生姜, 甘草",
+        efficacy: "色白で疲れやすく、汗をかきやすいものの次の諸症：肥満症（水太り）、関節水腫、むくみ、多汗症",
+        caution: "甘草含有。水太りタイプの変形性膝関節症等に頻用。"
+    },
+    {
+        id: "TJ-22",
+        name: "消風散（しょうふうさん）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["皮膚症状"],
+        details: [],
+        sho: "風湿熱毒・浸出液を伴う皮膚瘙痒",
+        composition: "当帰, 地黄, 膏薬, 蒼朮, 防風, 蝉退, 知母, 胡麻, 牛膝, 木通, 苦参, 甘草, 荊芥",
+        efficacy: "湿疹・皮膚炎、じんましん、あせも、水虫で分泌物が多くかゆみの強いもの",
+        caution: "地黄・甘草含有。滲出液が多く痒みが激しいアトピー性皮膚炎・急性湿疹に適応。"
+    },
+    {
+        id: "TJ-31",
+        name: "呉茱萸湯（ごしゅゆとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["疼痛・関節痛", "胃腸障害"],
+        details: ["頭重感"],
+        sho: "胃寒・厥陰頭痛・手足の冷えと激しい吐き気・片頭痛",
+        composition: "呉茱萸, 人参, 生姜, 大棗",
+        efficacy: "手足の冷えやすいものの次の諸症：片頭痛、頭痛に伴う吐き気、繰り返す嘔吐",
+        caution: "甘草不含。独特の苦味がある。冷えから来る激しい片頭痛（血管性頭痛）に第一選択。"
+    },
+    {
+        id: "TJ-34",
+        name: "白虎加人参湯（びゃっこかにんじんとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["皮膚症状", "精神・神経症状"],
+        details: ["皮膚乾燥"],
+        sho: "陽明気分熱・激しい口渇・身熱・多汗",
+        composition: "知母, 石膏, 人参, 甘草, 粳米",
+        efficacy: "喉の渇きと火照りを伴うもの：熱中症初期、皮膚炎の炎症・かゆみ、皮膚乾燥",
+        caution: "石膏高容量・甘草含有。強い冷却効果と保水（生津）効果を持つ。"
+    },
+    {
+        id: "TJ-57",
+        name: "温経湯（うんけいとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["婦人科系症状", "皮膚症状"],
+        details: ["皮膚乾燥"],
+        sho: "沖任虚寒・瘀血・手掌角化症・唇乾燥",
+        composition: "当帰, 川芎, 芍薬, 人参, 桂皮, 阿膠, 牡丹皮, 生姜, 甘草, 半夏, 麦門冬, 呉茱萸",
+        efficacy: "月経不順、更年期障害、手足の火照りと下半身の冷え、手掌角化症（手荒れ）",
+        caution: "甘草含有。上熱下寒（手足の火照りと下半身の冷え）や皮膚乾燥・手荒れを伴う不妊・月経不順に多用。"
+    },
+    {
+        id: "TJ-61",
+        name: "桃核承気湯（とうかくじょうきとう）",
+        kyojitsu: ["実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["婦人科系症状", "精神・神経症状"],
+        details: ["イライラ", "便秘"],
+        sho: "下焦瘀熱・血結胸・熱狂・顕著な実証",
+        composition: "桃仁, 大黄, 桂皮, 甘草, 芒硝",
+        efficacy: "体力充実して、のぼせて便秘しがちなものの次の諸症：月経不順、月経痛、更年期障害、腰痛、便秘、激しい精神不安",
+        caution: "大黄・芒硝含有（下痢・腹痛・流早産リスク）。著しい虚弱者や妊婦には禁忌。"
+    },
+    {
+        id: "TJ-71",
+        name: "四物湯（しもつとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["婦人科系症状", "皮膚症状"],
+        details: ["皮膚乾燥"],
+        sho: "肝血虚・皮膚乾燥・血行不良",
+        composition: "当帰, 川芎, 芍薬, 地黄",
+        efficacy: "皮膚が乾燥し、色つやの悪いものの次の諸症：産後あるいは流産後の疲労回復、月経不順、冷え症、皮膚のかさつき・乾燥",
+        caution: "甘草不含。地黄含有のため胃腸虚弱者では食欲不振・胃もたれを生じやすい。"
+    },
+    {
+        id: "TJ-84",
+        name: "大黄甘草湯（だいおうかんぞうとう）",
+        kyojitsu: ["虚証", "中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害"],
+        details: ["便秘"],
+        sho: "腸胃熱結・便秘",
+        composition: "大黄, 甘草",
+        efficacy: "便秘症、便秘に伴う頭重・のぼせ・湿疹・食欲不振",
+        caution: "大黄と甘草のみで構成。甘草高容量（連用時の偽アルドステロン症注意）および大黄による腹痛・常用性に注意。"
+    },
+    {
+        id: "TJ-89",
+        name: "治打撲一方（ちだぼくいっぽう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["疼痛・関節痛"],
+        details: [],
+        sho: "外傷性瘀血・局所腫脹・疼痛",
+        composition: "川芎, 朴樕, 桂皮, 丁字, 大黄, 朴硝, 甘草",
+        efficacy: "打撲、ねんざによる腫れおよび痛み",
+        caution: "大黄・甘草含有。急性期の打撲・捻挫による皮下出血や腫脹の早期退縮に著名な効果。"
+    },
+    {
+        id: "TJ-90",
+        name: "清肺湯（せいはいとう）",
+        kyojitsu: ["中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: [],
+        sho: "肺熱・粘稠性気道分泌物・気道乾燥",
+        composition: "黄芩, 桔梗, 茯苓, 桑白皮, 杏仁, 山梔子, 天門冬, 貝母, 陳皮, 桔梗, 竹茹, 大棗, 五味子, 甘草, 乾姜",
+        efficacy: "気管支炎、頑固な咳・粘り気の強い痰を伴う呼吸器疾患",
+        caution: "山梔子・甘草含有。タバコや大気汚染による慢性気管支炎・粘稠痰に頻用。"
+    },
+    {
+        id: "TJ-104",
+        name: "辛夷清肺湯（しんいせいはいとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: [],
+        sho: "肺熱鬱熱・鼻塞がり・濃稠鼻汁",
+        composition: "辛夷, 知母, 百合, 黄芩, 山梔子, 枇杷葉, 麦門冬, 石膏, 升麻",
+        efficacy: "鼻づまり、慢性鼻炎、蓄膿症（副鼻腔炎）",
+        caution: "甘草不含。山梔子長期投与リスク。熱感を伴う慢性副鼻腔炎（黄色い粘稠鼻汁）に最適。"
+    },
+    {
+        id: "TJ-109",
+        name: "小建中湯（しょうけんちゅうとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["胃腸障害", "疼痛・関節痛"],
+        details: ["倦怠感"],
+        sho: "脾胃虚寒・腹皮拘急・小児虚弱・裏急腹痛",
+        composition: "桂皮, 芍薬, 甘草, 大棗, 生姜, 膠飴",
+        efficacy: "小児虚弱体質、疲労困憊、慢性腹痛、夜尿症、虚弱児の体質改善",
+        caution: "甘草含有。膠飴（水飴成分）を含み甘く飲みやすいため小児科領域で常用される。"
+    },
+    {
+        id: "TJ-116",
+        name: "茯苓飲合半夏厚朴湯（ぶくりょういんごうはんげこうぼくとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "精神・神経症状"],
+        details: ["動悸", "頭重感"],
+        sho: "胃気虚水滞＋梅核気（気鬱・気逆）",
+        composition: "茯苓, 白朮, 人参, 陳皮, 枳実, 生姜, 半夏, 厚朴, 蘇葉",
+        efficacy: "気分がふさいで咽頭の異物感があり、吐き気、胸やけ、食欲不振、胃もたれを伴うもの",
+        caution: "甘草不含。茯苓飲（胃内停水改善）と半夏厚朴湯（咽頭異物感・気鬱改善）の合方。逆流性食道炎に多用。"
+    },
+    {
+        id: "TJ-135",
+        name: "参蘇飲（じんそいん）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["感冒・呼吸器", "胃腸障害"],
+        details: ["倦怠感"],
+        sho: "気虚感冒・脾胃虚弱・内傷外感",
+        composition: "人参, 蘇葉, 前胡, 半夏, 乾生姜, 茯苓, 枳実, 陳皮, 桔梗, 甘草, 大棗",
+        efficacy: "胃腸の弱い人の感冒、感冒に伴う咳・胃腸障害・発熱",
+        caution: "甘草含有。体力低下者や高齢者の風邪初期（葛根湯や麻黄湯が使えない胃腸虚弱者）に適応。"
+    }
+];
+
+const kampoDatabase_Part4 = [
+    {
+        id: "TJ-32",
+        name: "人参湯（にんじんとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["胃腸障害", "水滞・浮腫"],
+        details: ["倦怠感", "下痢"],
+        sho: "脾胃虚寒・胃内停水・腹部冷痛",
+        composition: "人参, 甘草, 白朮, 乾姜",
+        efficacy: "胃腸虚弱、胃アトニー、慢性胃炎、急性胃腸炎、下痢、手足の冷え",
+        caution: "甘草含有。冷えと水様便を伴う著しい胃腸機能低下に適応（理中丸と同方）。"
+    },
+    {
+        id: "TJ-33",
+        name: "知柏地黄丸（ちばくじおうがん）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["泌尿器症状", "皮膚症状"],
+        details: ["皮膚乾燥"],
+        sho: "腎陰虚・相火旺盛・手足火照り・陰虚火旺",
+        composition: "知母, 黄柏, 地黄, 山茱萸, 山薬, 沢瀉, 茯苓, 牡丹皮",
+        efficacy: "顔面紅潮、手足の火照り、排尿困難、頻尿、むくみ",
+        caution: "甘草不含。地黄含有のため胃腸虚弱者には注意。八味地黄丸の温め（附子・桂皮）を冷まし（知母・黄柏）に置換した処方。"
+    },
+    {
+        id: "TJ-35",
+        name: "四逆散（しぎゃくさん）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["精神・神経症状", "胃腸障害", "疼痛・関節痛"],
+        details: ["イライラ"],
+        sho: "肝気鬱結・熱厥・腹皮拘急",
+        composition: "柴胡, 枳実, 芍薬, 甘草",
+        efficacy: "胆のう炎、胆石症、胃炎、神経症、慢性胃炎の胸やけ・胃痛",
+        caution: "甘草含有。ストレスによる手足の冷え（四逆）や腹直筋の緊張・心下部の苦満感に効果。"
+    },
+    {
+        id: "TJ-36",
+        name: "木防己湯（もくぼういとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["水滞・浮腫", "感冒・呼吸器"],
+        details: ["動悸"],
+        sho: "支飲・心下痞堅・喘鳴・喘息・浮腫",
+        composition: "木防己, 石膏, 桂皮, 人参",
+        efficacy: "心臓病・喘息に伴う呼吸困難、むくみ、動悸",
+        caution: "甘草不含。心不全や利尿剤抵抗性の強い浮腫・呼吸困難に考慮される。"
+    },
+    {
+        id: "TJ-38",
+        name: "竜胆瀉肝湯（りゅうたんしゃかんとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["泌尿器症状", "皮膚症状", "婦人科系症状"],
+        details: ["イライラ"],
+        sho: "下焦湿熱・肝経湿熱・排尿痛・排膿",
+        composition: "竜胆, 黄芩, 山梔子, 沢瀉, 木通, 車前子, 当帰, 地黄, 甘草",
+        efficacy: "排尿痛、残尿感、尿の濁り、かゆみ、下物（おりもの）",
+        caution: "山梔子長期連用リスク。地黄・甘草含有。下焦（尿路・性器系）の急熱・炎症に頻用。"
+    },
+    {
+        id: "TJ-40",
+        name: "猪苓湯（ちょれいとう）",
+        kyojitsu: ["虚証", "中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["泌尿器症状", "水滞・浮腫"],
+        details: [],
+        sho: "水熱互結・排尿障害・血尿",
+        composition: "猪苓, 茯苓, 沢瀉, 阿膠, 滑石",
+        efficacy: "尿量減少、排尿痛、排尿困難、残尿感、頻尿",
+        caution: "甘草不含。抗炎症（滑石）と止血（阿膠）および利水作用を併せ持ち、尿路感染症・尿路結石に多用。"
+    },
+    {
+        id: "TJ-51",
+        name: "潤腸湯（じゅんちょうとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害"],
+        details: ["便秘", "皮膚乾燥"],
+        sho: "腸管陰虚・血虚津枯・高齢者便秘",
+        composition: "当帰, 地黄, 桃仁, 杏仁, 枳実, 厚朴, 黄芩, 大黄, 麻子仁, 甘草",
+        efficacy: "体力が低下したものの便秘（特に高齢者や乾燥肌の慢性便秘）",
+        caution: "大黄・甘草含有。腸管にうるおい（津液）を補いながら無理なく排便を促す。"
+    },
+    {
+        id: "TJ-53",
+        name: "柴胡清肝湯（さいこせいかんとう）",
+        kyojitsu: ["中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["皮膚症状", "感冒・呼吸器"],
+        details: ["イライラ"],
+        sho: "肝経風熱・腺病質・アレルギー体質（小児）",
+        composition: "柴胡, 黄芩, 黄柏, 山梔子, 桔梗, 防風, 荊芥, 当帰, 川芎, 芍薬, 地黄, 枳実, 甘草, 薄荷",
+        efficacy: "小児の神経症、腺病質、慢性扁桃炎、湿疹・皮膚炎",
+        caution: "山梔子・甘草含有。小児の疳のむし・慢性アレルギー疾患に適応。"
+    },
+    {
+        id: "TJ-55",
+        name: "麻杏甘石湯（まきょうかんせきとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: [],
+        sho: "肺熱喘息・汗出・激しい喘鳴・咳嗽",
+        composition: "麻黄, 杏仁, 甘草, 石膏",
+        efficacy: "小児喘息、気管支喘息、気管支炎、感冒、痔の痛み",
+        caution: "麻黄高容量・甘草含有。発汗・動悸注意。熱感を伴う激しい咳・喘鳴に速効性。"
+    },
+    {
+        id: "TJ-58",
+        name: "清上防風湯（せいじょうぼうふうとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["皮膚症状"],
+        details: [],
+        sho: "上焦鬱熱・顔面熱毒・発赤性丘疹",
+        composition: "防風, 桔梗, 枳実, 黄連, 黄芩, 山梔子, 連翹, 荊芥, 川芎, 白芷, 甘草, 薄荷",
+        efficacy: "にきび、顔面の湿疹・皮膚炎、赤ら顔",
+        caution: "山梔子・甘草含有。顔面や頭部の熱感・発赤・化膿性ニキビに効果。"
+    },
+    {
+        id: "TJ-67",
+        name: "女神散（にょしんさん）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["婦人科系症状", "精神・神経症状"],
+        details: ["イライラ", "動悸"],
+        sho: "気血不調・血の道症・気逆上衝",
+        composition: "当帰, 川芎, 芍薬, 蒼朮, 木香, 香附子, 檳榔子, 黄連, 黄芩, 桂皮, 丁子, 甘草",
+        efficacy: "産後あるいは更年期障害による精神不安、いらだち、頭痛、のぼせ、めまい",
+        caution: "甘草含有。血の道症で、のぼせやイライラなどの精神神経症状が著明な場合に向く。"
+    },
+    {
+        id: "TJ-73",
+        name: "柴芍六君子湯（さいしゃくりっくんしとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "精神・神経症状"],
+        details: ["倦怠感", "イライラ"],
+        sho: "脾虚肝乗・肝脾不和・神経性胃炎",
+        composition: "人参, 白朮, 茯苓, 半夏, 陳皮, 柴胡, 芍薬, 甘草, 生姜, 大棗",
+        efficacy: "胃腸の弱いものの次の諸症：胃炎、胃痛、食欲不振、神経性胃炎",
+        caution: "甘草含有。六君子湯の適応に精神的ストレスによる胃痛・腹満が加わった病態に適合。"
+    },
+    {
+        id: "TJ-75",
+        name: "四君子湯（しくんしとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害"],
+        details: ["倦怠感", "下痢"],
+        sho: "脾胃気虚基本方・消化吸収不全",
+        composition: "人参, 白朮, 茯苓, 甘草",
+        efficacy: "胃腸が弱く、食欲がなく、みぞおちが支えて疲れやすく、貧血気味で手足が冷えやすいもの",
+        caution: "甘草含有。補気剤の基本骨格となる処方。"
+    },
+    {
+        id: "TJ-79",
+        name: "平胃散（へいいさん）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "水滞・浮腫"],
+        details: ["頭重感", "下痢"],
+        sho: "脾胃湿滞・食滞・胃内停水",
+        composition: "蒼朮, 厚朴, 陳皮, 甘草, 生姜, 大棗",
+        efficacy: "急性胃腸炎、慢性胃腸炎、消化不良、食欲不振、胃もたれ",
+        caution: "甘草含有。食べ過ぎ、飲み過ぎによる胃の重たさ・粘り気の排泄を促す。"
+    },
+    {
+        id: "TJ-80",
+        name: "柴気湯（さいきとう）",
+        kyojitsu: ["中間"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "水滞・浮腫", "感冒・呼吸器"],
+        details: ["下痢"],
+        sho: "少陽病気鬱＋脾胃湿滞（小柴胡湯＋平胃散）",
+        composition: "柴胡, 黄芩, 半夏, 人参, 甘草, 大棗, 生姜, 蒼朮, 厚朴, 陳皮",
+        efficacy: "水様性下痢、急性胃腸炎、暑気あたり、感冒",
+        caution: "小柴胡湯成分含むため間質性肺炎注意。甘草含有。"
+    }
+];
+
+const kampoDatabase_Part5 = [
+    {
+        id: "TJ-81",
+        name: "辛夷清肺湯（しんいせいはいとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: [],
+        sho: "肺熱鬱熱・鼻塞がり・濃稠鼻汁",
+        composition: "辛夷, 知母, 百合, 黄芩, 山梔子, 枇杷葉, 麦門冬, 石膏, 升麻",
+        efficacy: "鼻づまり、慢性鼻炎、蓄膿症（副鼻腔炎）",
+        caution: "甘草不含。山梔子長期投与リスク。熱感を伴う慢性副鼻腔炎（黄色い粘稠鼻汁）に最適。"
+    },
+    {
+        id: "TJ-82",
+        name: "桂枝人参湯（けいしにんじんとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["胃腸障害", "感冒・呼吸器"],
+        details: ["下痢"],
+        sho: "太陽病表証未解＋太陰病脾胃虚寒（人参湯＋桂皮）",
+        composition: "桂皮, 人参, 白朮, 乾姜, 甘草",
+        efficacy: "頭痛、心下痞硬（みぞおちの支え）、水様性下痢を伴う風邪や胃腸炎",
+        caution: "甘草含有。冷えに伴う頭痛と下痢を同時に呈する場合に効果的。"
+    },
+    {
+        id: "TJ-85",
+        name: "升麻葛根湯（しょうまかっこんとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器", "皮膚症状"],
+        details: [],
+        sho: "陽明表熱・透疹・発疹初期",
+        composition: "升麻, 葛根, 芍薬, 甘草, 生姜",
+        efficacy: "感冒初期、麻疹（はしか）初期、急性皮膚炎",
+        caution: "麻黄不含。甘草含有。胃腸虚弱者や麻黄が使えない発熱性疾患の初期に向く。"
+    },
+    {
+        id: "TJ-86",
+        name: "当帰飲子（とうきいんし）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["皮膚症状"],
+        details: ["皮膚乾燥"],
+        sho: "血虚風燥・高齢者皮膚瘙痒・乾燥",
+        composition: "当帰, 川芎, 芍薬, 地黄, 白朮, 防風, 荊芥, 疾梨子, 黄耆, 甘草",
+        efficacy: "乾燥性皮膚炎、老人性皮膚瘙痒症、慢性湿疹",
+        caution: "地黄・甘草含有。老人性皮膚掻痒症など乾燥とかゆみが著しい皮膚病に頻用。"
+    },
+    {
+        id: "TJ-87",
+        name: "六味丸（ろくみがん）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["泌尿器症状", "水滞・浮腫"],
+        details: ["皮膚乾燥"],
+        sho: "腎陰虚・腎気不全・手足火照り（小児・成人）",
+        composition: "地黄, 山茱萸, 山薬, 沢瀉, 茯苓, 牡丹皮",
+        efficacy: "排尿困難、頻尿、むくみ、手足の火照り、小児の発育遅延",
+        caution: "八味地黄丸から桂皮・附子を除いた処方。甘草不含。温めずに腎陰を補う。"
+    },
+    {
+        id: "TJ-88",
+        name: "二朮湯（にじゅつとう）",
+        kyojitsu: ["中間"],
+        kannetsu: "平",
+        targetSymptoms: ["疼痛・関節痛", "水滞・浮腫"],
+        details: ["肩こり"],
+        sho: "風湿痰飲・肩背痛・四十肩・五十肩",
+        composition: "蒼朮, 白朮, 茯苓, 半夏, 陳皮, 天南星, 黄芩, 威霊仙, 羌活, 香附子, 甘草, 乾姜",
+        efficacy: "五十肩、四十肩、肩こり、腕・肩の痛み",
+        caution: "甘草含有。水滞・痰飲が原因となる肩関節の可動域制限や夜間痛に速効性を持つ。"
+    },
+    {
+        id: "TJ-92",
+        name: "滋陰至宝湯（じいんしほうとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: ["倦怠感", "皮膚乾燥"],
+        sho: "肺腎陰虚・虚労・慢性咳嗽・微熱",
+        composition: "当帰, 川芎, 芍薬, 地黄, 柴胡, 黄芩, 知母, 貝母, 麦門冬, 陳皮, 香附子, 地骨皮, 甘草, 薄荷",
+        efficacy: "慢性気管支炎、病後の長引く咳、微熱、ねあせ",
+        caution: "地黄・甘草含有。病後・高齢者の長引く慢性咳嗽や咽頭乾燥に適合。"
+    },
+    {
+        id: "TJ-95",
+        name: "五積散（ごしゃくさん）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "寒",
+        targetSymptoms: ["疼痛・関節痛", "胃腸障害", "婦人科系症状"],
+        details: ["肩こり"],
+        sho: "寒・湿・気・血・痰の五積・冷え・寒湿痺",
+        composition: "蒼朮, 桔梗, 枳実, 陳皮, 厚朴, 半夏, 当帰, 川芎, 芍薬, 桂皮, 白芷, 乾姜, 茯苓, 麻黄, 甘草",
+        efficacy: "冷え症、腰痛、神経痛、関節痛、月経痛、胃腸炎",
+        caution: "麻黄・甘草含有。冷えと湿気（雨天増悪など）による頑固な疼痛・腰痛に多用。"
+    },
+    {
+        id: "TJ-96",
+        name: "柴朴湯（さいぼくとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["感冒・呼吸器", "精神・神経症状"],
+        details: ["動悸"],
+        sho: "少陽病気鬱＋梅核気（小柴胡湯＋半夏厚朴湯）",
+        composition: "柴胡, 黄芩, 半夏, 人参, 甘草, 大棗, 生姜, 茯苓, 厚朴, 蘇葉",
+        efficacy: "小児気管支喘息、気管支喘息、気管支炎、咳、不安神経症",
+        caution: "小柴胡湯成分を含むため間質性肺炎の監視要。甘草含有。ステロイド依存性喘息の減量化にも使用。"
+    },
+    {
+        id: "TJ-100",
+        name: "大建中湯（だいけんちゅうとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["胃腸障害", "疼痛・関節痛"],
+        details: [],
+        sho: "中寒恵痛・腹皮拘急・腸管蠕動不全・腹部冷痛",
+        composition: "蜀椒, 乾姜, 人参, 膠飴",
+        efficacy: "腹が冷えて痛むもの、腹部膨満感、術後腸管麻痺・イレウス予防",
+        caution: "甘草不含。消化管運動亢進・血流増加作用が科学的に実証され、消化器外科領域等で著用。"
+    },
+    {
+        id: "TJ-105",
+        name: "通導散（つうどうさん）",
+        kyojitsu: ["実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["疼痛・関節痛", "婦人科系症状", "胃腸障害"],
+        details: ["便秘"],
+        sho: "下焦著明瘀血・血結・実熱便秘",
+        composition: "当帰, 桃仁, 紅花, 大黄, 芒硝, 枳実, 厚朴, 木通, 甘草, 蘇木",
+        efficacy: "打撲、ねんざ、月経不順、月経痛、腰痛、便秘",
+        caution: "大黄・芒硝含有（劇烈な下痢・流早産注意）。著しい体質実証・強い瘀血の便秘患者に向く。"
+    },
+    {
+        id: "TJ-106",
+        name: "温清飲（うんせいいん）",
+        kyojitsu: ["中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["婦人科系症状", "皮膚症状", "精神・神経症状"],
+        details: ["イライラ", "皮膚乾燥"],
+        sho: "血虚生熱・血熱・皮膚乾燥・のぼせ（四物湯＋黄連解毒湯）",
+        composition: "当帰, 川芎, 芍薬, 地黄, 黄連, 黄芩, 黄柏, 山梔子",
+        efficacy: "月経不順、月経困難、血の道症、更年期障害、神経症、皮膚炎",
+        caution: "山梔子長期投与リスク。地黄含有。甘草不含。皮膚のかさつきと炎症・のぼせが同居する場合に適適。"
+    },
+    {
+        id: "TJ-117",
+        name: "茵蔯蒿湯（いんちんこうとう）",
+        kyojitsu: ["実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["胃腸障害", "皮膚症状"],
+        details: ["便秘"],
+        sho: "湿熱発黄・肝胆湿熱・裏熱便秘",
+        composition: "茵蔯蒿, 山梔子, 大黄",
+        efficacy: "黄疸、急性肝炎、ネフローゼ、蕁麻疹、口内炎",
+        caution: "山梔子・大黄含有（下痢・胃部不快感）。肝胆道系の急性湿熱・黄疸症状に対する代表方剤。"
+    },
+    {
+        id: "TJ-124",
+        name: "川芎茶調散（せんきゅうちゃちょうさん）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "寒",
+        targetSymptoms: ["疼痛・関節痛", "感冒・呼吸器"],
+        details: ["頭重感"],
+        sho: "風寒外感・頭痛・感冒頭痛",
+        composition: "川芎, 白芷, 羌活, 防風, 荊芥, 薄荷, 甘草, 細茶",
+        efficacy: "風邪による頭痛、血の道症・偏頭痛",
+        caution: "甘草含有。外感風寒による急性頭痛や偏頭痛に速効性。"
+    },
+    {
+        id: "TJ-138",
+        name: "桔梗湯（ききょうとう）",
+        kyojitsu: ["虚証", "中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: [],
+        sho: "咽喉腫痛・排膿",
+        composition: "桔梗, 甘草",
+        efficacy: "扁桃炎、扁桃周囲炎による咽頭痛",
+        caution: "甘草含有。水に溶かして含嗽しながらゆっくり服用することで局所抗炎症・抗腫脹効果が高まる。"
+    }
+];
+
+const kampoDatabase_Part6 = [
+    {
+        id: "TJ-45",
+        name: "黄連湯（おうれんとう）",
+        kyojitsu: ["中間"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害"],
+        details: ["頭重感"],
+        sho: "上熱下寒・胸中有熱・胃中有寒・心下痞硬",
+        composition: "黄連, 半夏, 人参, 乾姜, 桂皮, 甘草, 大棗",
+        efficacy: "急性胃腸炎、二日酔い、口内炎、胸やけ",
+        caution: "甘草含有。みぞおちのつかえ（上熱）と足冷え・腹痛（下寒）が同居する複雑病態に適応。"
+    },
+    {
+        id: "TJ-46",
+        name: "七物降下湯（しちもつこうかとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["疼痛・関節痛", "精神・神経症状"],
+        details: ["肩こり", "頭重感"],
+        sho: "腎陰虚・気血両虚・高血圧頭重",
+        composition: "当帰, 川芎, 芍薬, 地黄, 黄柏, 鉤藤, 黄耆",
+        efficacy: "身体虚弱なものの高血圧に伴う随伴症状（頭重、肩こり、耳鳴り、めまい）",
+        caution: "甘草不含。地黄含有のため胃腸虚弱者に注意。身体虚弱な高齢者の高血圧随伴症状に頻用。"
+    },
+    {
+        id: "TJ-47",
+        name: "釣藤散（ちょうとうさん）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["疼痛・関節痛", "精神・神経症状"],
+        details: ["イライラ", "頭重感"],
+        sho: "肝風内動・肝陽上亢・中年以降の早朝頭痛",
+        composition: "鉤藤, 半夏, 麦門冬, 茯苓, 橘皮, 人参, 防風, 菊花, 石膏, 甘草, 生姜",
+        efficacy: "中年以降の慢性頭痛、高血圧に伴う随伴症状（頭痛、めまい、肩こり）",
+        caution: "甘草含有。早朝起床時に増悪する緊張型頭痛や血管性頭痛、脳血管障害後の慢性頭痛に定評。"
+    },
+    {
+        id: "TJ-52",
+        name: "薏苡仁湯（よくいにんとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["疼痛・関節痛", "水滞・浮腫"],
+        details: [],
+        sho: "風湿痺・関節着痺・筋肉痛・関節腫脹",
+        composition: "薏苡仁, 当帰, 芍薬, 麻黄, 桂皮, 蒼朮, 甘草",
+        efficacy: "関節痛、筋肉痛、神経痛",
+        caution: "麻黄・甘草含有。関節の腫れや水分滞留を伴う急性〜亜急性の疼痛に有効。"
+    },
+    {
+        id: "TJ-56",
+        name: "五淋散（ごりんさん）",
+        kyojitsu: ["中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["泌尿器症状"],
+        details: [],
+        sho: "下焦湿熱・膀胱熱結・頻尿・排尿痛",
+        composition: "茯苓, 当帰, 芍薬, 地黄, 沢瀉, 黄芩, 桔梗, 柴胡, 木通, 山梔子, 甘草",
+        efficacy: "頻尿、排尿痛、残尿感、尿の濁り",
+        caution: "山梔子・地黄・甘草含有。慢性尿路感染症や排尿違和感の遷延例に用いられる。"
+    },
+    {
+        id: "TJ-59",
+        name: "治頭痛一方（ちづつういっぽう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["疼痛・関節痛", "婦人科系症状"],
+        details: ["頭重感"],
+        sho: "上焦瘀熱・頭部血結・頑固な頭痛",
+        composition: "川芎, 濁苓, 蔓荊子, 野生菊, 防風, 荊芥, 忍冬, 連翹, 紅花, 甘草",
+        efficacy: "慢性頭痛、血の道症による頭痛",
+        caution: "甘草含有。女性の月経周期に伴う頑固な片頭痛・鬱血性頭痛に適応。"
+    },
+    {
+        id: "TJ-60",
+        name: "桂枝加芍薬大黄湯（けいしかしゃく薬だいおうとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "疼痛・関節痛"],
+        details: ["便秘"],
+        sho: "脾胃虚寒・裏急後重・便秘傾向（桂枝加芍薬湯＋大黄）",
+        composition: "桂皮, 芍薬, 甘草, 大棗, 生姜, 大黄",
+        efficacy: "腹部膨満感のあるものの次の諸症：しぶり腹、腹痛、便秘",
+        caution: "大黄・甘草含有。身体虚弱で腹痛・しぶり腹を伴う便秘（痙攣性便秘など）に向く。"
+    },
+    {
+        id: "TJ-63",
+        name: "五味消毒飲（ごみしょうどくいん）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["皮膚症状"],
+        details: [],
+        sho: "熱毒化膿・局所発赤・化膿性腫瘍",
+        composition: "金銀花, 野菊花, 蒲公英, 紫花地丁, 紫背天葵",
+        efficacy: "化膿性皮膚疾患、急性皮膚炎、とびひ",
+        caution: "甘草不含。強い清熱解毒作用を持ち、急性期の化膿性皮膚疾患・せつ・よう等に効果。"
+    },
+    {
+        id: "TJ-76",
+        name: "申耆補気湯（しんぎほきとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["胃腸障害", "感冒・呼吸器"],
+        details: ["倦怠感", "下痢"],
+        sho: "中気下陥・脾胃気虚・著しい虚弱",
+        composition: "人参, 黄耆, 白朮, 甘草, 当帰, 陳皮, 升麻, 柴胡",
+        efficacy: "疲れやすく体力低下が著しいものの消化不良・感冒",
+        caution: "甘草含有。補中益気湯に準じた高度な気虚病態に対する補気方剤。"
+    },
+    {
+        id: "TJ-77",
+        name: "芎帰膠艾湯（きゅうききょうがいとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["婦人科系症状", "泌尿器症状"],
+        details: [],
+        sho: "沖任虚寒・脾不統血・持続的下血・不正出血",
+        composition: "川芎, 阿膠, 甘草, 艾葉, 当帰, 芍薬, 地黄",
+        efficacy: "痔出血、不正性器出血、月経過多、妊婦の出血",
+        caution: "地黄・甘草含有。冷えを伴う持続的な少量出血（機能性子宮出血や痔出血等）に止血・補血作用を示す。"
+    },
+    {
+        id: "TJ-93",
+        name: "滋陰降火湯（じいんこうかとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器", "皮膚症状"],
+        details: ["倦怠感", "皮膚乾燥"],
+        sho: "陰虚火旺・肺腎陰虚・夜間咳嗽・微熱・陰虚盗汗",
+        composition: "地黄, 麦門冬, 天門冬, 当帰, 芍薬, 白朮, 陳皮, 知母, 黄柏, 甘草",
+        efficacy: "陰虚傾向（皮膚乾燥・喉渇く）の慢性気管支炎、長引く咳、微熱、ねあせ",
+        caution: "地黄・甘草含有。激しい夜間咳嗽や喉の乾燥感・火照りを伴う慢性呼吸器疾患に適合。"
+    },
+    {
+        id: "TJ-102",
+        name: "当帰湯（とうきとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["胃腸障害", "疼痛・関節痛"],
+        details: [],
+        sho: "胸背寒痛・胃寒心痛・背部痛",
+        composition: "当帰, 人参, 桂皮, 芍薬, 半夏, 厚朴, 黄耆, 甘草, 乾姜, 山椒",
+        efficacy: "背中が冷えて痛み、腹部膨満感や吐き気のある胃炎、肋間神経痛",
+        caution: "甘草含有。背部・胸部の冷えと激しい差し込む痛みに有効。"
+    },
+    {
+        id: "TJ-103",
+        name: "酸棗仁湯（さんそうにんとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["精神・神経症状"],
+        details: ["倦怠感"],
+        sho: "心身虚労・心血虚・虚煩不眠・熟睡障害",
+        composition: "酸棗仁, 茯苓, 知母, 川芎, 甘草",
+        efficacy: "心身が疲れて不眠の人、神経症、不眠症",
+        caution: "甘草含有。心身疲労に伴う「疲れているのに眠れない」虚煩不眠の第一選択。"
+    },
+    {
+        id: "TJ-120",
+        name: "黄連阿膠湯（おうれんあきょうとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["精神・神経症状", "胃腸障害"],
+        details: ["イライラ", "動悸"],
+        sho: "陰虚火旺・心腎不交・激しい不眠・心煩",
+        composition: "黄連, 黄芩, 芍薬, 阿膠, 鶏子黄",
+        efficacy: "不眠症、不安神経症、鼻出血、機能性子宮出血",
+        caution: "甘草不含。激しい焦燥感・不安感・手足の熱感を伴う難治性不眠症に適応。"
+    },
+    {
+        id: "TJ-136",
+        name: "清暑益気湯（せいしょえっきとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "熱",
+        targetSymptoms: ["胃腸障害", "感冒・呼吸器"],
+        details: ["倦怠感", "下痢"],
+        sho: "暑熱傷気・暑熱傷津・夏バテ・食欲不振・自汗",
+        composition: "人参, 黄耆, 白朮, 蒼朮, 当帰, 麦門冬, 五味子, 陳皮, 黄柏, 甘草",
+        efficacy: "夏ばて、食欲不振、下痢、全身倦怠、発熱",
+        caution: "甘草含有。暑さによる発汗・脱水と全身倦怠（暑気あたり）の回復に特化した夏用補気剤。"
+    }
+];
+
+const kampoDatabase_Part7 = [
+    {
+        id: "TJ-13",
+        name: "滋陰至宝湯（じいんしほうとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: ["倦怠感", "皮膚乾燥"],
+        sho: "肺陰虚・虚労・長引く咳嗽",
+        composition: "当帰, 川芎, 芍薬, 地黄, 柴胡, 黄芩, 知母, 貝母, 麦門冬, 陳皮, 香附子, 地骨皮, 甘草, 薄荷",
+        efficacy: "慢性気管支炎、病後の長引く咳、微熱",
+        caution: "地黄・甘草含有。高齢者や虚弱者の乾燥性咳嗽に適応。"
+    },
+    {
+        id: "TJ-21",
+        name: "小半夏加茯苓湯（しょうはんげかぶくりょうとう）",
+        kyojitsu: ["虚証", "中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "水滞・浮腫"],
+        details: ["頭重感"],
+        sho: "胃内停水・気逆・悪心・嘔吐",
+        composition: "半夏, 生姜, 茯苓",
+        efficacy: "妊娠悪阻（つわり）、嘔吐、急性胃腸炎、二日酔い",
+        caution: "甘草不含。生姜・半夏・茯苓のシンプルな構成でつわり・嘔吐に第一選択。"
+    },
+    {
+        id: "TJ-29",
+        name: "竹茹温胆湯（ちくじょおんたんとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器", "精神・神経症状"],
+        details: ["イライラ", "動悸"],
+        sho: "胆鬱痰擾・不眠・気管支炎・感冒後期の熱微 lingering",
+        composition: "竹茹, 枳実, 半夏, 茯苓, 陳皮, 甘草, 生姜, 柴胡, 黄連, 人参, 桔梗, 香附子",
+        efficacy: "インフルエンザや感冒の回復期の咳、不眠、神経症",
+        caution: "甘草含有。感冒・感染症罹患後の長引く微熱・不眠・激しい咳に適応。"
+    },
+    {
+        id: "TJ-42",
+        name: "麻黄附子細辛湯（まおうぶしさいしんとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["感冒・呼吸器", "疼痛・関節痛"],
+        details: ["倦怠感"],
+        sho: "少陰病始得之・太陰少陰感冒・極度の冷えと倦怠感",
+        composition: "麻黄, 附子, 細辛",
+        efficacy: "悪寒が強い感冒、アレルギー性鼻炎、神経痛",
+        caution: "麻黄・附子含有（交感神経刺激・心毒性注意）。甘草不含。高齢者の冷えの強い初期風邪に速効性。"
+    },
+    {
+        id: "TJ-65",
+        name: "桂枝加黄耆湯（けいしかおうぎとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["水滞・浮腫", "皮膚症状"],
+        details: ["倦怠感"],
+        sho: "表虚自汗・黄疸・黄汗・皮膚潰瘍",
+        composition: "桂皮, 芍薬, 黄耆, 生姜, 大棗, 甘草",
+        efficacy: "寝あせ、多汗症、むくみ、急性皮膚炎",
+        caution: "甘草含有。汗をかきやすく皮膚の弱い虚弱者の寝あせ・表虚に用いられる。"
+    },
+    {
+        id: "TJ-66",
+        name: "参苓白朮散（じんりょうびゃくじゅつさん）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "水滞・浮腫"],
+        details: ["倦怠感", "下痢"],
+        sho: "脾胃気虚・湿盛下痢・慢性消化不良",
+        composition: "人参, 白朮, 茯苓, 甘草, 山薬, 蓮肉, 薏苡仁, 桔梗, 砂仁, 扁豆",
+        efficacy: "慢性下痢、消化不良、胃腸虚弱、食欲不振、病後の体力低下",
+        caution: "甘草含有。小児・高齢者の慢性的な軟便・下痢・消化吸収不良の体質改善に多用。"
+    },
+    {
+        id: "TJ-69",
+        name: "茯苓飲（ぶくりょういん）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害"],
+        details: ["頭重感"],
+        sho: "胃内停水・胃気虚・吐き気・胸やけ",
+        composition: "茯苓, 白朮, 人参, 陳皮, 枳実, 生姜",
+        efficacy: "胃吐き気、胸やけ、胃もたれ、食欲不振、急性・慢性胃炎",
+        caution: "甘草不含。胃の中に水が溜まりチャポチャポ音がする（胃内停水）症状に適合。"
+    },
+    {
+        id: "TJ-72",
+        name: "甘草瀉心湯（かんぞうしゃしんとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "精神・神経症状"],
+        details: ["下痢", "イライラ"],
+        sho: "心下痞硬・脾胃虚弱・腸鳴下痢・口内炎",
+        composition: "甘草, 半夏, 黄連, 黄芩, 人参, 大棗, 乾姜",
+        efficacy: "急・慢性胃腸炎、醗酵性下痢、消化不良、口内炎、神経症",
+        caution: "甘草高容量含有（偽アルドステロン症注意）。半夏瀉心湯に比して腹鳴・下痢が激しい場合に適応。"
+    },
+    {
+        id: "TJ-78",
+        name: "麻杏薏甘湯（まきょうよくかんとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "平",
+        targetSymptoms: ["疼痛・関節痛", "皮膚症状"],
+        details: [],
+        sho: "風湿在表・関節痛・筋肉痛・いぼ",
+        composition: "麻黄, 杏仁, 薏苡仁, 甘草",
+        efficacy: "関節痛、神経痛、筋肉痛、いぼ、手足のあれ",
+        caution: "麻黄・甘草含有。夕方に増悪する関節痛・神経痛やいぼ（青年性扁平疣贅等）に定評。"
+    },
+    {
+        id: "TJ-91",
+        name: "竹葉石膏湯（ちくようせっこうとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["感冒・呼吸器"],
+        details: ["倦怠感"],
+        sho: "気津両傷・余熱未清・乾性咳嗽・口渇",
+        composition: "竹葉, 石膏, 半夏, 麦門冬, 人参, 甘草, 粳米",
+        efficacy: "熱性疾患の回復期の気管支炎、咳、口渇、虚弱体質者の熱中症後遺症",
+        caution: "甘草含有。急性感染症の解熱後も空咳・のどの渇き・微熱が続く状態を解消する。"
+    },
+    {
+        id: "TJ-97",
+        name: "大防風湯（だいぼうふうとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["疼痛・関節痛"],
+        details: ["倦怠感"],
+        sho: "気血両虚・風寒湿痺・関節変形・頑固な関節痛",
+        composition: "黄耆, 附子, 防風, 当帰, 川芎, 芍薬, 地黄, 白朮, 茯苓, 人参, 桂皮, 牛膝, 杜仲, 甘草, 生姜",
+        efficacy: "慢性関節リウマチ、関節痛、痛風",
+        caution: "附子・地黄・甘草含有。極度の気血虚弱を伴う変形性関節症やリウマチの慢性期に適応。"
+    },
+    {
+        id: "TJ-98",
+        name: "黄連湯（おうれんとう）",
+        kyojitsu: ["中間"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害"],
+        details: [],
+        sho: "上熱下寒・腹痛・吐き気",
+        composition: "黄連, 半夏, 人参, 乾姜, 桂皮, 甘草, 大棗",
+        efficacy: "急性胃腸炎、二日酔い、口内炎、胸やけ",
+        caution: "甘草含有。胃の熱感（みぞおちの支え）と腹の冷え（腹痛）が混在する病態に作用。"
+    },
+    {
+        id: "TJ-113",
+        name: "三黄瀉心湯（さんおうしゃしんとう）",
+        kyojitsu: ["実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["精神・神経症状", "胃腸障害"],
+        details: ["イライラ", "便秘"],
+        sho: "三焦熱盛・のぼせ・顔面紅潮・血熱妄行",
+        composition: "黄連, 黄芩, 大黄",
+        efficacy: "高血圧の随伴症状（のぼせ、肩こり、耳鳴り、頭重）、不眠症、鼻出血、便秘",
+        caution: "大黄含有（下痢・腹痛注意）。甘草不含。実証タイプののぼせ・赤ら顔・精神興奮・便秘に適応。"
+    },
+    {
+        id: "TJ-123",
+        name: "当帰四逆加呉茱萸生姜湯（とうきしぎゃくかごしゅゆしょうぎょうとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["疼痛・関節痛", "婦人科系症状"],
+        details: [],
+        sho: "血虚寒厥・手足の極度の冷え・下腹部痛",
+        composition: "当帰, 桂皮, 芍薬, 細辛, 木通, 甘草, 大棗, 呉茱萸, 生姜",
+        efficacy: "手足の冷え症、下腹部痛、腰痛、しもやけ、頭痛",
+        caution: "甘草含有。末梢血管循環障害による手足の強い冷え込み・しもやけに対する代表処方。"
+    },
+    {
+        id: "TJ-140",
+        name: "香蘇散（こうそさん）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["感冒・呼吸器", "胃腸障害", "精神・神経症状"],
+        details: ["倦怠感"],
+        sho: "気鬱感冒・胃腸虚弱者の初期風邪",
+        composition: "香附子, 蘇葉, 陳皮, 甘草, 生姜",
+        efficacy: "胃腸の弱い人の感冒初期、神経症",
+        caution: "麻黄不含。甘草含有。胃腸が非常に弱く、気うつ傾向のある患者の風邪初期に好適。"
+    }
+];
+
+const kampoDatabase_Part8 = [
+    {
+        id: "TJ-4",
+        name: "排膿散及湯（はいのうさんきゅうとう）",
+        kyojitsu: ["虚証", "中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["皮膚症状", "感冒・呼吸器"],
+        details: [],
+        sho: "熱毒化膿・局所発赤腫脹・排膿促進",
+        composition: "桔梗, 枳実, 芍薬, 甘草, 大棗, 生姜",
+        efficacy: "化膿性皮膚疾患、歯槽膿漏、面疔、乳腺炎",
+        caution: "甘草含有。急性・慢性の化膿性炎症に対する消炎・排膿促進処方。"
+    },
+    {
+        id: "TJ-49",
+        name: "乙字湯去大黄（おつじとうきょだいおう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["疼痛・関節痛", "皮膚症状"],
+        details: [],
+        sho: "気逆・瘀血・下焦湿熱（下痢傾向・虚弱者）",
+        composition: "当帰, 柴胡, 黄芩, 甘草, 升麻",
+        efficacy: "いぼ痔、きれ痔、脱肛（下痢しやすい便秘のない患者）",
+        caution: "乙字湯から大黄を除いた処方。下痢傾向のある痔疾患患者に適応。甘草含有。"
+    },
+    {
+        id: "TJ-64",
+        name: "炙甘草湯（しゃかんぞうとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["精神・神経症状", "感冒・呼吸器"],
+        details: ["倦怠感", "動悸", "皮膚乾燥"],
+        sho: "気血陰陽倶虚・結代脈・心悸亢進・乾性咳嗽",
+        composition: "炙甘草, 生姜, 桂皮, 人参, 生地黄, 阿膠, 麦門冬, 麻仁, 大棗",
+        efficacy: "脈の結代（不整脈）、動悸、息切れ、気管支炎、虚弱体質の疲労感",
+        caution: "甘草高容量含有（偽アルドステロン症に特に警戒）。生地黄含有。不整脈や動悸を伴う気血虚に適応。"
+    },
+    {
+        id: "TJ-70",
+        name: "香砂六君子湯（こうしゃりっくんしとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["胃腸障害"],
+        details: ["倦怠感", "頭重感"],
+        sho: "脾胃気虚・気鬱・湿滞・胃内停水",
+        composition: "人参, 白朮, 茯苓, 半夏, 陳皮, 甘草, 大棗, 生姜, 香附子, 縮砂",
+        efficacy: "胃腸の弱いものの次の諸症：胃炎、胃痛、食欲不振、胃もたれ、嘔吐",
+        caution: "甘草含有。六君子湯に香附子・縮砂を加え、理気・開胃作用を強化した処方。"
+    },
+    {
+        id: "TJ-74",
+        name: "調胃承気湯（ちょういじょうきとう）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["胃腸障害"],
+        details: ["便秘"],
+        sho: "陽明病燥熱・胃腸熱結・緩下便秘",
+        composition: "大黄, 甘草, 芒硝",
+        efficacy: "便秘、便秘に伴うのぼせ・頭重・口の渇き",
+        caution: "大黄・芒硝含有（腹痛・下痢・妊婦注意）。承気湯類の中で最も緩和な瀉下作用を持つ。"
+    },
+    {
+        id: "TJ-99",
+        name: "小建中湯加黄耆（黄耆建中湯）（おうぎけんちゅうとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["胃腸障害", "皮膚症状"],
+        details: ["倦怠感"],
+        sho: "脾胃虚寒・虚労・表虚自汗・ねあせ",
+        composition: "桂皮, 芍薬, 甘草, 大棗, 生姜, 膠飴, 黄耆",
+        efficacy: "虚弱体質、疲労困憊、ねあせ、慢性潰瘍、皮膚の化膿傾向",
+        caution: "甘草含有。小建中湯に黄耆を加え、補気・表虚改善・創傷治癒促進作用を高めた処方。"
+    },
+    {
+        id: "TJ-101",
+        name: "升麻胃風湯（しょうまいふうとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["胃腸障害", "皮膚症状"],
+        details: [],
+        sho: "脾胃風熱・顔面腫脹・麻痺・歯痛",
+        composition: "升麻, 葛根, 当帰, 甘草, 柴胡, 白芷, 本草, 黄耆, 人参",
+        efficacy: "顔面の湿疹・皮膚炎、歯痛、頭痛",
+        caution: "甘草含有。顔面・頭部の風熱症状や三叉神経痛、皮膚炎に応用される。"
+    },
+    {
+        id: "TJ-110",
+        name: "立効散（りっこうさん）",
+        kyojitsu: ["中間", "実証"],
+        kannetsu: "熱",
+        targetSymptoms: ["疼痛・関節痛"],
+        details: [],
+        sho: "歯痛・口腔腫痛・風火歯痛",
+        composition: "細辛, 升麻, 防風, 龍胆, 甘草",
+        efficacy: "歯痛、抜歯後の疼痛、口腔炎",
+        caution: "甘草含有。液状にして口中に含んで塗布・含嗽させることで局所麻酔・消炎効果を発揮。"
+    },
+    {
+        id: "TJ-111",
+        name: "清心蓮子飲（せいしんれんしいん）",
+        kyojitsu: ["虚証"],
+        kannetsu: "熱",
+        targetSymptoms: ["泌尿器症状", "精神・神経症状"],
+        details: ["倦怠感", "動悸"],
+        sho: "心腎不交・気陰両虚・下焦湿熱・排尿痛・頻尿",
+        composition: "蓮肉, 人参, 黄耆, 茯苓, 沢瀉, 黄芩, 地骨皮, 車前子, 甘草",
+        efficacy: "全身倦怠感があり、口や舌が乾き、尿が出渋るものの次の諸症：残尿感、頻尿、排尿痛、排尿困難",
+        caution: "甘草含有。神経因性膀胱や高齢者・心身疲労者の慢性尿路トラブルに頻用。"
+    },
+    {
+        id: "TJ-112",
+        name: "猪苓湯合四物湯（ちょれいとうごうしもつとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "平",
+        targetSymptoms: ["泌尿器症状", "皮膚症状"],
+        details: ["皮膚乾燥"],
+        sho: "水熱互結＋陰血不足・慢性排尿障害・血尿・皮膚乾燥",
+        composition: "猪苓, 茯苓, 沢瀉, 阿膠, 滑石, 当帰, 川芎, 芍薬, 地黄",
+        efficacy: "尿量減少、排尿痛、排尿困難、残尿感、頻尿（皮膚乾燥や貧血を伴うもの）",
+        caution: "地黄含有。甘草不含。猪苓湯の利水抗炎症作用に四物湯の補血潤燥作用を合わせた合方。"
+    },
+    {
+        id: "TJ-115",
+        name: "胃苓湯（いれいとう）",
+        kyojitsu: ["中間"],
+        kannetsu: "平",
+        targetSymptoms: ["胃腸障害", "水滞・浮腫"],
+        details: ["下痢", "頭重感"],
+        sho: "脾胃湿滞＋水滞（平胃散＋五苓散）",
+        composition: "蒼朮, 厚朴, 陳皮, 甘草, 生姜, 大棗, 沢瀉, 茯苓, 白朮, 猪苓, 桂皮",
+        efficacy: "水様性下痢、急性胃腸炎、暑気あたり、冷えによる腹痛・下痢",
+        caution: "甘草含有。冷えや食不養生に伴う急性の水様性下痢・夏バテ腹痛に即効性。"
+    },
+    {
+        id: "TJ-118",
+        name: "枕中丹（ちんちゅうたん）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["精神・神経症状"],
+        details: ["動悸"],
+        sho: "心腎不交・健忘・失眠・神経衰弱",
+        composition: "亀板, 竜骨, 遠志, 菖蒲",
+        efficacy: "健忘症、不眠症、神経症",
+        caution: "甘草不含。高齢者の物忘れ（認知機能低下）や精神不安定・熟睡障害に適用。"
+    },
+    {
+        id: "TJ-121",
+        name: "三物黄芩湯（さんもつおうごんとう）",
+        kyojitsu: ["虚証", "中間"],
+        kannetsu: "熱",
+        targetSymptoms: ["皮膚症状", "婦人科系症状"],
+        details: ["皮膚乾燥"],
+        sho: "血虚生熱・手足煩熱・陰虚発熱・手足の不快な熱感",
+        composition: "黄芩, 苦参, 地黄",
+        efficacy: "手足のほてり、不眠症、かゆみ",
+        caution: "地黄含有。甘草不含。手足のひどい火照り（レストレスレッグス症候群等）や夜間のかゆみに好適。"
+    },
+    {
+        id: "TJ-126",
+        name: "麻黄附子細辛湯去麻黄（附子細辛湯）（ぶしさいしんとう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "寒",
+        targetSymptoms: ["疼痛・関節痛", "感冒・呼吸器"],
+        details: ["倦怠感"],
+        sho: "少陰病陰寒・心陽虚・寒痺疼痛",
+        composition: "附子, 細辛",
+        efficacy: "極度の冷えを伴う神経痛、関節痛、水様性鼻汁",
+        caution: "麻黄を除外したことで循環器への刺激を抑え、高齢者や高血圧者の強い冷え・痛み・鼻水に対応。"
+    },
+    {
+        id: "TJ-141",
+        name: "香蘇散加茯苓川芎（こうそさんかぶくりょうせんきゅう）",
+        kyojitsu: ["虚証"],
+        kannetsu: "平",
+        targetSymptoms: ["精神・神経症状", "胃腸障害"],
+        details: ["頭重感", "イライラ"],
+        sho: "気鬱・気逆・頭痛・胃腸虚弱",
+        composition: "香附子, 蘇葉, 陳皮, 甘草, 生姜, 茯苓, 川芎",
+        efficacy: "神経症、胃腸の弱いものの頭痛、めまい",
+        caution: "甘草含有。香蘇散に茯苓・川芎を加えることで水滞・頭痛に対する効果を補強。"
+    }
+];
+
+// Part1〜Part8の宣言が完了した後に統合（順番の修正）
+const kampoDatabase = [
+    ...kampoDatabase_Part1,
+    ...kampoDatabase_Part2,
+    ...kampoDatabase_Part3,
+    ...kampoDatabase_Part4,
+    ...kampoDatabase_Part5,
+    ...kampoDatabase_Part6,
+    ...kampoDatabase_Part7,
+    ...kampoDatabase_Part8
+];
+
+function analyzeAndRecommend() {
+    const kyojitsuSelected = document.querySelector('input[name="kyojitsu"]:checked').value;
+    const kannetsuSelected = document.querySelector('input[name="kannetsu"]:checked').value;
+
+    const selectedSymptoms = Array.from(document.querySelectorAll('.symptom-check:checked')).map(cb => cb.value);
+    const selectedDetails = Array.from(document.querySelectorAll('.detail-check:checked')).map(cb => cb.value);
+
+    if (selectedSymptoms.length === 0 && selectedDetails.length === 0) {
+        alert("主な症状または随伴所見を最低1つ選択してください。");
+        return;
+    }
+
+    // スコアリング算出
+    const scoredList = kampoDatabase.map(item => {
+        let score = 0;
+
+        // 虚実マッチ
+        if (item.kyojitsu.includes(kyojitsuSelected)) {
+            score += 15;
+        }
+
+        // 寒熱マッチ
+        if (item.kannetsu === kannetsuSelected || item.kannetsu === "平" || kannetsuSelected === "平") {
+            score += 10;
+        }
+
+        // 症状（主訴）マッチ
+        item.targetSymptoms.forEach(sym => {
+            if (selectedSymptoms.includes(sym)) {
+                score += 25;
+            }
+        });
+
+        // 随伴症状・詳細マッチ
+        item.details.forEach(det => {
+            if (selectedDetails.includes(det)) {
+                score += 15;
+            }
+        });
+
+        return { ...item, score };
+    });
+
+    // スコアが高い順にソート（15点超を抽出）
+    const filteredList = scoredList.filter(item => item.score > 15).sort((a, b) => b.score - a.score);
+
+    renderResults(filteredList);
+}
+
+function renderResults(results) {
+    const container = document.getElementById("resultsContainer");
+    container.innerHTML = "";
+
+    if (results.length === 0) {
+        container.innerHTML = `<div class="placeholder-text">該当する適応処方が見つかりませんでした。条件を変更して再検索してください。</div>`;
+        return;
+    }
+
+    results.forEach((item, index) => {
+        const isHigh = index === 0 || item.score >= 50;
+        const div = document.createElement("div");
+        div.className = `result-item ${isHigh ? 'high-match' : ''}`;
+
+        div.innerHTML = `
+            <div class="result-header">
+                <span class="kampo-name">${item.id} ${item.name}</span>
+                <span class="match-rate">適合スコア: ${item.score}</span>
+            </div>
+            <div class="tag-container">
+                <span class="tag sho">証: ${item.sho}</span>
+                <span class="tag">虚実: ${item.kyojitsu.join('・')}</span>
+                <span class="tag">寒熱: ${item.kannetsu}</span>
+            </div>
+            <div class="detail-row"><span class="detail-label">主な効能・効果:</span> ${item.efficacy}</div>
+            <div class="detail-row"><span class="detail-label">構成生薬:</span> ${item.composition}</div>
+            <div class="caution-text"><strong>【使用上の注意】</strong> ${item.caution}</div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+</script>
+
+</body>
+</html>
