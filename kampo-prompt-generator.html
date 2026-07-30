@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中医弁証プロンプト生成ツール</title>
+<style>
+body { font-family: sans-serif; max-width: 800px; margin: 20px auto; padding: 0 20px; line-height: 1.6; }
+.card { border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin-bottom: 16px; background-color: #fafafa; }
+h2 { margin-top: 0; }
+label { display: block; margin-bottom: 8px; font-weight: bold; }
+.symptom-group { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.symptom-group input[type="text"] { flex-grow: 1; padding: 6px; }
+.badge { background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px; font-weight: bold; font-size: 0.9em; }
+button { cursor: pointer; padding: 8px 16px; border: none; border-radius: 4px; background-color: #007bff; color: white; font-size: 1em; }
+button:hover { background-color: #0056b3; }
+button.secondary { background-color: #6c757d; }
+button.secondary:hover { background-color: #545b62; }
+textarea { width: 100%; height: 250px; font-family: monospace; padding: 8px; box-sizing: border-box; }
+.action-row { display: flex; gap: 8px; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<h1>中医弁証支援 プロンプト生成ツール</h1>
+
+<div class="card">
+<h2>1. 症状の入力と重み付け（困り順）</h2>
+<p>困っている度の高い順番に症状を入力してください。自動的に重み付け番号（1〜）が付与されます。</p>
+
+<div id="symptoms-container">
+<div class="symptom-group">
+<span class="badge">1</span>
+<input type="text" class="symptom-input" placeholder="例：頭痛（特に夕方に悪化、めまいを伴う）">
+</div>
+<div class="symptom-group">
+<span class="badge">2</span>
+<input type="text" class="symptom-input" placeholder="例：肩こり（張るような痛み）">
+</div>
+<div class="symptom-group">
+<span class="badge">3</span>
+<input type="text" class="symptom-input" placeholder="例：手足の冷え、疲れやすさ">
+</div>
+</div>
+
+<button type="button" class="secondary" onclick="addSymptomInput()">＋ 症状を追加</button>
+</div>
+
+<div class="card">
+<h2>2. 患者背景・基本情報（任意）</h2>
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+<div>
+<label>年齢・性別</label>
+<input type="text" id="patient-demo" placeholder="例：40代 女性" style="width: 100%; padding: 6px; box-sizing: border-box;">
+</div>
+<div>
+<label>発症時期・経過</label>
+<input type="text" id="patient-course" placeholder="例：3ヶ月前から漸増" style="width: 100%; padding: 6px; box-sizing: border-box;">
+</div>
+<div>
+<label>体形・その他の特徴</label>
+<input type="text" id="patient-constitution" placeholder="例：痩せ型、胃腸が弱め" style="width: 100%; padding: 6px; box-sizing: border-box;">
+</div>
+</div>
+</div>
+
+<div class="card">
+<h2>3. 生成されたプロンプト</h2>
+<button type="button" onclick="generatePrompt()">プロンプトを生成する</button>
+<div style="margin-top: 12px;">
+<textarea id="prompt-output" readonly placeholder="「プロンプトを生成する」を押すとここに表示されます。"></textarea>
+</div>
+<div class="action-row">
+<button type="button" onclick="copyPrompt()">コピペする（クリップボードにコピー）</button>
+</div>
+</div>
+
+<script>
+let symptomCount = 3;
+
+function addSymptomInput() {
+symptomCount++;
+const container = document.getElementById('symptoms-container');
+const div = document.createElement('div');
+div.className = 'symptom-group';
+div.innerHTML = `
+<span class="badge">${symptomCount}</span>
+<input type="text" class="symptom-input" placeholder="症状を入力">
+`;
+container.appendChild(div);
+}
+
+function generatePrompt() {
+const inputs = document.querySelectorAll('.symptom-input');
+let symptomsText = "";
+let rank = 1;
+
+inputs.forEach((input) => {
+const val = input.value.trim();
+if (val) {
+symptomsText += ` 重み ${rank}: ${val}\n`;
+rank++;
+}
+});
+
+if (!symptomsText) {
+symptomsText = " （症状未入力）\n";
+}
+
+const demo = document.getElementById('patient-demo').value.trim() || '未記載';
+const course = document.getElementById('patient-course').value.trim() || '未記載';
+const constitution = document.getElementById('patient-constitution').value.trim() || '未記載';
+
+const systemPrompt = `あなたは優秀な中医師・漢方医学のエキスパートAIです。
+医療者が脈診や腹診といった他覚的所見に頼らず、問診と症状の優先順位から精度高く中医弁証を導き出せるよう、段階的に臨床推論を支援してください。
+
+【患者情報】
+- 基本情報（年齢/性別）: ${demo}
+- 経過・発症時期: ${course}
+- 体質・その他: ${constitution}
+
+【主訴・症状（数字が小さいほど患者にとって優先度・困り度が高い）】
+${symptomsText}
+【出力ステップと指示】
+まずは「ステップ1」のみを出力してください。ステップ2以降は、こちらの回答を受けてから次のやり取りで行います。
+
+---
+
+### ステップ1：鑑別弁証の提示と追加問診の実施
+1. **候補となる中医弁証の挙げる**
+上記主訴（特に重み1・2の症状）および患者背景を重視し、可能性の構想として考えられる**大まかな中医弁証（鑑別弁証）を3〜4つ**挙げてください。
+2. **鑑別するための問診項目の提示**
+挙げた鑑別弁証を確定・排除するために必要な**「追加問診項目」**を列挙してください。
+※脈診・腹診は行わない前提のため、舌脈情報以外の自覚症状（寒熱、汗、飲水、飲食、二便、睡眠、精神状態、婦人科症状など）に絞って具体的な質問を作成してください。
+
+---
+（※ステップ1に対する私の回答を入力後、以下のステップに進む準備をしてください）
+・ステップ2：確定した弁証（病因病機）の初学者にもわかりやすい解説と、候補となる漢方薬同士を使い分けるポイント（方証相対の要点）、処方をさらに絞り込むための追加問診事項の提示`;
+
+document.getElementById('prompt-output').value = systemPrompt;
+}
+
+function copyPrompt() {
+const textVal = document.getElementById('prompt-output').value;
+if (!textVal) {
+alert('先にプロンプトを生成してください。');
+return;
+}
+navigator.clipboard.writeText(textVal).then(() => {
+alert('クリップボードにコピーしました！生成AIに貼り付けてご使用ください。');
+}).catch(err => {
+alert('コピーに失敗しました。手動でテキストを選択してコピーしてください。');
+});
+}
+</script>
+
+</body>
+</html>
