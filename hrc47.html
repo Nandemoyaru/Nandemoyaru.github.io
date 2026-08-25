@@ -66,6 +66,19 @@
             flex-wrap: wrap;
         }
 
+        .logo-placeholder {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .badge-hrc {
             background: var(--accent-orange);
             color: #fff;
@@ -489,6 +502,9 @@
     <!-- 1. ヘッダーエリア -->
     <header class="header">
         <div class="header-top">
+            <div class="logo-placeholder">
+                <i class="fa-solid fa-hospital-user"></i> HRC47
+            </div>
             <span class="badge-hrc">日本病院総合診療学会 研修医支援プラットフォーム</span>
         </div>
         <div class="catchphrase">
