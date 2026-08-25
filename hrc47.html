@@ -66,19 +66,6 @@
             flex-wrap: wrap;
         }
 
-        .logo-placeholder {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px dashed rgba(255, 255, 255, 0.4);
-            border-radius: 6px;
-            padding: 6px 16px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            letter-spacing: 0.05em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .badge-hrc {
             background: var(--accent-orange);
             color: #fff;
@@ -289,7 +276,7 @@
             text-align: right;
         }
 
-        /* 5. 講師紹介（画像なし全幅レイアウト） */
+        /* 5. 講師紹介 */
         .instructor-card {
             background: #ffffff;
             border-radius: 8px;
@@ -331,7 +318,91 @@
             border: 1px solid #BEE3F8;
         }
 
-        /* 6. フッター & アクション（QRコードなしレイアウト） */
+        /* 6. 参加フローエリア（融合部分） */
+        .flow-bg {
+            background: #F0F4F8;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 6px solid var(--primary-blue);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--primary-blue);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 0.8rem;
+            padding: 3px 12px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            color: var(--primary-navy);
+        }
+
+        .step-content {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 10px 20px;
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-navy);
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 1.4rem;
+            color: var(--accent-teal);
+            margin: -6px 0;
+        }
+
+        .note-box {
+            background-color: #FFF8E1;
+            border: 1px solid #FFE082;
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #5D4037;
+        }
+
+        .note-box strong {
+            color: #D84315;
+        }
+
+        /* 7. フッター & アクション */
         .cta-footer {
             background: #0A2540;
             color: #ffffff;
@@ -378,7 +449,7 @@
             padding-top: 12px;
         }
 
-        /* 📱 スマホ用レスポンシブデザイン */
+        /* スマホ用レスポンシブデザイン */
         @media (max-width: 768px) {
             .flyer-container {
                 margin: 0;
@@ -418,9 +489,6 @@
     <!-- 1. ヘッダーエリア -->
     <header class="header">
         <div class="header-top">
-            <div class="logo-placeholder">
-                <i class="fa-solid fa-hospital-user"></i> HRC47 LOGO
-            </div>
             <span class="badge-hrc">日本病院総合診療学会 研修医支援プラットフォーム</span>
         </div>
         <div class="catchphrase">
@@ -516,7 +584,7 @@
         <div class="curriculum-note">※テーマは参加者の興味や状況に応じて柔軟に変更する場合があります。</div>
     </section>
 
-    <!-- 5. 講師紹介エリア（画像枠なし） -->
+    <!-- 5. 講師紹介エリア -->
     <section class="section-padding">
         <div class="section-header">
             <i class="fa-solid fa-chalkboard-user"></i>
@@ -534,7 +602,56 @@
         </div>
     </section>
 
-    <!-- 6. フッター＆アクションエリア（QR枠なし） -->
+    <!-- 6. レクチャー参加フローエリア（参加ガイドを統合） -->
+    <section class="section-padding flow-bg">
+        <div class="section-header">
+            <i class="fa-solid fa-route"></i>
+            <h2 class="section-title">レクチャー参加までのステップ</h2>
+        </div>
+        <div class="flow-container">
+            <!-- STEP 1 -->
+            <div class="step-card">
+                <span class="step-number">STEP 01</span>
+                <div class="step-title">HRC47への参加登録（Googleフォーム）</div>
+                <p class="step-content">
+                    公式紹介サイトにアクセスし、ページ内にある参加登録用Googleフォームへ回答を行ってください。
+                </p>
+                <a href="https://hgm-japan.com/hrc47/" target="_blank" rel="noopener noreferrer" class="btn">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> HRC47 公式紹介サイトを開く
+                </a>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- STEP 2 -->
+            <div class="step-card">
+                <span class="step-number">STEP 02</span>
+                <div class="step-title">LINEグループへの参加</div>
+                <p class="step-content">
+                    Googleフォーム送信完了画面（または案内）に表示されるリンクから、HRC47専用のLINEグループに参加します。
+                </p>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- STEP 3 -->
+            <div class="step-card">
+                <span class="step-number">STEP 03</span>
+                <div class="step-title">Zoom参加登録 ＆ 当日受講</div>
+                <p class="step-content">
+                    LINEグループ内の「ノート」に記載されている勉強会用Zoom登録リンクから事前登録を行ってください。<br>
+                    登録完了後に届くWebinar用URLより、当日レクチャーへご参加いただけます。
+                </p>
+            </div>
+        </div>
+
+        <div class="note-box">
+            <strong>事前準備のお願い：</strong><br>
+            Zoom登録リンクはLINEグループのノートに固定されています。レクチャー開始前までに登録を完了させておいてください。
+        </div>
+    </section>
+
+    <!-- 7. フッター＆アクションエリア -->
     <footer class="cta-footer">
         <div class="cta-box">
             <div class="cta-headline">HRC47に加入して、一生モノの視点を手に入れよう！</div>
