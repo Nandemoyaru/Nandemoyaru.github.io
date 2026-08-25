@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>総合診療レクチャー 参加フロー | HRC47</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #008080;
+            --accent-color: #ff9800;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin: 0 0 10px 0;
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .step-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 6px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--primary-color);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 0.85rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #111;
+        }
+
+        .step-content {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #003d80;
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin: -10px 0;
+        }
+
+        .note-box {
+            background-color: #fff8e1;
+            border: 1px solid #ffe082;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+
+        .note-box strong {
+            color: #d84315;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>総合診療レクチャー 参加ガイド</h1>
+        <p>研修医支援プラットフォーム（HRC47）主催レクチャーへのステップ</p>
+    </div>
+
+    <div class="flow-container">
+        <!-- STEP 1 -->
+        <div class="step-card">
+            <span class="step-number">STEP 01</span>
+            <div class="step-title">HRC47への参加登録（Googleフォーム）</div>
+            <p class="step-content">
+                公式紹介サイトにアクセスし、ページ内にある参加登録用Googleフォームへ回答を行ってください。
+            </p>
+            <a href="https://hgm-japan.com/hrc47/" target="_blank" rel="noopener noreferrer" class="btn">
+                HRC47 公式紹介サイトを開く
+            </a>
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <!-- STEP 2 -->
+        <div class="step-card">
+            <span class="step-number">STEP 02</span>
+            <div class="step-title">LINEグループへの参加</div>
+            <p class="step-content">
+                Googleフォーム送信完了画面（または案内）に表示されるリンクから、HRC47専用のLINEグループに参加します。
+            </p>
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <!-- STEP 3 -->
+        <div class="step-card">
+            <span class="step-number">STEP 03</span>
+            <div class="step-title">Zoom参加登録 ＆ 当日受講</div>
+            <p class="step-content">
+                LINEグループ内の「ノート」に記載されている勉強会用Zoom登録リンクから事前登録を行ってください。<br>
+                登録完了後に届くURLから、当日レクチャーへご参加いただけます。
+            </p>
+        </div>
+    </div>
+
+    <div class="note-box">
+        <strong>事前準備のお願い：</strong><br>
+        Zoom登録リンクはLINEグループのノートに固定されています。レクチャー開始前までに登録を完了させておいてください。
+    </div>
+</div>
+
+</body>
+</html>
