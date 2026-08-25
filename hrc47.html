@@ -3,180 +3,554 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>総合診療レクチャー 参加フロー | HRC47</title>
+    <title>総合診療がみえる！ | 研修医向け総合診療レクチャーシリーズ</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --primary-color: #0056b3;
-            --secondary-color: #008080;
-            --accent-color: #ff9800;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
+            --primary-navy: #0A2540;
+            --primary-blue: #0066CC;
+            --accent-teal: #00A88F;
+            --accent-orange: #FF6B35;
+            --accent-yellow: #FFB800;
+            --bg-light: #F4F7FA;
+            --card-bg: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-muted: #4A5568;
+            --border-color: #CBD5E0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
             line-height: 1.6;
-            margin: 0;
-            padding: 20px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        .container {
+        /* 全体コンテナ */
+        .flyer-container {
             max-width: 800px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin: 20px auto;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
 
+        /* 1. ヘッダーエリア */
         .header {
-            text-align: center;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            background: #0A2540;
+            color: #ffffff;
+            padding: 24px 32px 20px;
+            border-bottom: 4px solid var(--accent-orange);
         }
 
-        .header h1 {
-            color: var(--primary-color);
-            font-size: 1.8rem;
-            margin: 0 0 10px 0;
-        }
-
-        .header p {
-            margin: 0;
-            font-size: 0.95rem;
-            color: #666;
-        }
-
-        .flow-container {
+        .header-top {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .logo-placeholder {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-hrc {
+            background: var(--accent-orange);
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .catchphrase {
+            color: var(--accent-yellow);
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #E2E8F0;
+            font-weight: 400;
+        }
+
+        /* 2. メインビジュアル＆概要 */
+        .main-hero {
+            background: #102A43;
+            color: #ffffff;
+            padding: 36px 32px;
             position: relative;
         }
 
-        .step-card {
-            background: var(--card-bg);
+        .series-title-box {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .series-title {
+            font-size: 2.6rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.05em;
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+        }
+
+        .series-title-underline {
+            width: 140px;
+            height: 4px;
+            background: var(--accent-orange);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        .overview-grid {
+            display: flex;
+            gap: 12px;
+        }
+
+        .overview-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .overview-card i {
+            font-size: 1.5rem;
+            color: var(--accent-yellow);
+            width: 32px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .overview-label {
+            font-size: 0.7rem;
+            color: #CBD5E0;
+            font-weight: bold;
+        }
+
+        .overview-val {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        /* セクション共通 */
+        .section-padding {
+            padding: 28px 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-navy);
+        }
+
+        .section-header i {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+        }
+
+        /* 3. レクチャーの3つのポイント */
+        .points-grid {
+            display: flex;
+            gap: 16px;
+        }
+
+        .point-card {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px 18px;
             border: 1px solid var(--border-color);
-            border-left: 6px solid var(--primary-color);
+            border-top: 5px solid var(--accent-teal);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .point-card:nth-child(2) {
+            border-top-color: var(--primary-blue);
+        }
+
+        .point-card:nth-child(3) {
+            border-top-color: var(--accent-orange);
+        }
+
+        .point-icon {
+            width: 48px;
+            height: 48px;
+            background: #F0F4F8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            color: var(--primary-navy);
+            font-size: 1.3rem;
+            border: 1px solid #D9E2EC;
+        }
+
+        .point-title {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #0A2540;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .point-desc {
+            font-size: 0.85rem;
+            color: #2D3748;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        /* 4. カリキュラム案 */
+        .curriculum-bg {
+            background: #FAFBFD;
+        }
+
+        .curriculum-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .curriculum-item {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-blue);
+            border-radius: 6px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .curriculum-item i {
+            color: var(--accent-teal);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .curriculum-note {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        /* 5. 講師紹介（画像なし全幅レイアウト） */
+        .instructor-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .instructor-role {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            letter-spacing: 0.05em;
+        }
+
+        .instructor-name {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--primary-navy);
+            margin-bottom: 12px;
+        }
+
+        .instructor-bio {
+            font-size: 0.88rem;
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .instructor-sub {
+            background: #EBF8FF;
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: inline-block;
+            border: 1px solid #BEE3F8;
+        }
+
+        /* 6. フッター & アクション（QRコードなしレイアウト） */
+        .cta-footer {
+            background: #0A2540;
+            color: #ffffff;
+            padding: 28px 32px;
+            border-top: 4px solid var(--accent-yellow);
+        }
+
+        .cta-box {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             padding: 20px;
-            position: relative;
+            margin-bottom: 20px;
         }
 
-        .step-number {
-            display: inline-block;
-            background: var(--primary-color);
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 0.85rem;
-            padding: 2px 10px;
-            border-radius: 20px;
-            margin-bottom: 10px;
+        .cta-headline {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin-bottom: 6px;
         }
 
-        .step-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin: 0 0 10px 0;
-            color: #111;
+        .cta-subtext {
+            font-size: 0.88rem;
+            color: #E2E8F0;
+            line-height: 1.5;
+            margin-bottom: 14px;
         }
 
-        .step-content {
-            font-size: 0.95rem;
-            margin: 0;
+        .member-callout {
+            background: rgba(255, 107, 53, 0.25);
+            border-left: 4px solid var(--accent-orange);
+            padding: 10px 14px;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.82rem;
+            line-height: 1.5;
         }
 
-        .btn {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-
-        .btn:hover {
-            background-color: #003d80;
-        }
-
-        .arrow {
+        .footer-organizer {
             text-align: center;
-            font-size: 1.5rem;
-            color: var(--secondary-color);
-            margin: -10px 0;
+            font-size: 0.75rem;
+            color: #A0AEC0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 12px;
         }
 
-        .note-box {
-            background-color: #fff8e1;
-            border: 1px solid #ffe082;
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 30px;
-            font-size: 0.9rem;
-        }
+        /* 📱 スマホ用レスポンシブデザイン */
+        @media (max-width: 768px) {
+            .flyer-container {
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
 
-        .note-box strong {
-            color: #d84315;
+            .header, .main-hero, .section-padding, .cta-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .catchphrase { font-size: 1rem; }
+            .subtitle { font-size: 0.85rem; }
+            .series-title { font-size: 2.1rem; }
+
+            .overview-grid, .points-grid, .curriculum-grid {
+                flex-direction: column;
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .cta-box {
+                padding: 16px;
+            }
+
+            .curriculum-note {
+                text-align: left;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>総合診療レクチャー 参加ガイド</h1>
-        <p>すでにHRC47 LINEグループにご参加の方は「STEP 03」からお願いします！</p>
-    </div>
+<div class="flyer-container">
 
-    <div class="flow-container">
-        <!-- STEP 1 -->
-        <div class="step-card">
-            <span class="step-number">STEP 01</span>
-            <div class="step-title">HRC47への参加登録（Googleフォーム）</div>
-            <p class="step-content">
-                公式紹介サイトにアクセスし、ページ内にある参加登録用Googleフォームへ回答を行ってください。
-            </p>
-            <a href="https://hgm-japan.com/hrc47/" target="_blank" rel="noopener noreferrer" class="btn">
-                HRC47 公式紹介サイトを開く
-            </a>
+    <!-- 1. ヘッダーエリア -->
+    <header class="header">
+        <div class="header-top">
+            <div class="logo-placeholder">
+                <i class="fa-solid fa-hospital-user"></i> HRC47 LOGO
+            </div>
+            <span class="badge-hrc">日本病院総合診療学会 研修医支援プラットフォーム</span>
         </div>
-
-        <div class="arrow">↓</div>
-
-        <!-- STEP 2 -->
-        <div class="step-card">
-            <span class="step-number">STEP 02</span>
-            <div class="step-title">LINEグループへの参加</div>
-            <p class="step-content">
-                Googleフォーム送信完了画面（または案内）に表示されるリンクから、HRC47専用のLINEグループに参加します。
-            </p>
+        <div class="catchphrase">
+            <i class="fa-solid fa-graduation-cap"></i> 研修医のための総合診療レクチャーシリーズ開講！
         </div>
-
-        <div class="arrow">↓</div>
-
-        <!-- STEP 3 -->
-        <div class="step-card">
-            <span class="step-number">STEP 03</span>
-            <div class="step-title">Zoom参加登録 ＆ 当日受講</div>
-            <p class="step-content">
-                HRC47 LINEグループ内の「ノート」に記載されている勉強会用Zoom登録リンクから事前登録を行ってください。<br>
-                登録完了後に届くURLから、当日レクチャーへご参加いただけます。
-            </p>
+        <div class="subtitle">
+            「『総合診療って、結局何なの？』その疑問に、体系的な学びで応えます。」
         </div>
-    </div>
+    </header>
 
-    <div class="note-box">
-        <strong>事前準備のお願い：</strong><br>
-        Zoom登録リンクはLINEグループのノートに固定されています。レクチャー開始前までに登録を完了させておいてください。
-    </div>
+    <!-- 2. メインビジュアル＆シリーズ概要エリア -->
+    <section class="main-hero">
+        <div class="series-title-box">
+            <h1 class="series-title">総合診療がみえる！</h1>
+            <div class="series-title-underline"></div>
+        </div>
+        
+        <div class="overview-grid">
+            <div class="overview-card">
+                <i class="fa-regular fa-calendar-check"></i>
+                <div>
+                    <div class="overview-label">日時</div>
+                    <div class="overview-val">毎月1回程度<br>19:00〜20:00</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <i class="fa-solid fa-user-doctor"></i>
+                <div>
+                    <div class="overview-label">対象</div>
+                    <div class="overview-val">総合診療に興味のある研修医・HRC47メンバー</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <i class="fa-solid fa-laptop"></i>
+                <div>
+                    <div class="overview-label">形式</div>
+                    <div class="overview-val">オンライン開催<br>（Zoom配信）</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 本レクチャーの3つのポイント -->
+    <section class="section-padding">
+        <div class="section-header">
+            <i class="fa-solid fa-gem"></i>
+            <h2 class="section-title">本レクチャー 3つのポイント</h2>
+        </div>
+        <div class="points-grid">
+            <div class="point-card">
+                <div class="point-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div class="point-title">体系的なカリキュラム</div>
+                <div class="point-desc">ルーブリック（学習到達指標）に基づき、マインドセットから具体的な診断・アプローチまで網羅。</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <div class="point-title">実践的ケースディスカッション</div>
+                <div class="point-desc">総論・各論を学んだ後は、実際の症例を通したディスカッションで臨床推論能力を鍛えます。</div>
+            </div>
+            <div class="point-card">
+                <div class="point-icon">
+                    <i class="fa-solid fa-box-archive"></i>
+                </div>
+                <div class="point-title">【永久保存版】アーカイブ完備</div>
+                <div class="point-desc">全ての講義動画・資料はアーカイブ化。HRC47メンバーは、いつでも・何度でも視聴可能です。</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. カリキュラムエリア -->
+    <section class="section-padding curriculum-bg">
+        <div class="section-header">
+            <i class="fa-solid fa-list-check"></i>
+            <h2 class="section-title">カリキュラム案（ルーブリック準拠）</h2>
+        </div>
+        <div class="curriculum-grid">
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 病院総合診療の紹介</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 地域医療の紹介</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 患者中心の医療</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 診断学の基本</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 不確実性/複雑性の基本</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 人生/生活の見かた</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> SDHとアドボカシー</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 家族志向ケア初級編</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 継続性</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 総合診療と領域診療</div>
+            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> プロフェッショナリズム</div>
+        </div>
+        <div class="curriculum-note">※テーマは参加者の興味や状況に応じて柔軟に変更する場合があります。</div>
+    </section>
+
+    <!-- 5. 講師紹介エリア（画像枠なし） -->
+    <section class="section-padding">
+        <div class="section-header">
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <h2 class="section-title">講師紹介</h2>
+        </div>
+        <div class="instructor-card">
+            <div class="instructor-role">メイン講師</div>
+            <div class="instructor-name">天野 雅之 医師（南奈良総合医療センター 総合診療科 部長）</div>
+            <div class="instructor-bio">
+                教育研修センターで後進医師の育成にも情熱を注いでおられます。奈良県南部のへき地の診療所の所長と基幹病院の勤務を兼務し、病診連携の画期的な改革を成し遂げた経験もお持ちです。また、MBAの学位を取得し、総合診療の中身（Generalism）を体系立てて“見える化”することにも取り組んでいらっしゃいます。
+            </div>
+            <div class="instructor-sub">
+                <i class="fa-solid fa-users"></i> 日本病院総合診療学会のチームメンバーも多数登壇！
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. フッター＆アクションエリア（QR枠なし） -->
+    <footer class="cta-footer">
+        <div class="cta-box">
+            <div class="cta-headline">HRC47に加入して、一生モノの視点を手に入れよう！</div>
+            <div class="cta-subtext">
+                加入すれば、本レクチャーのアーカイブ動画・資料もすべて見放題です。
+            </div>
+            <div class="member-callout">
+                <i class="fa-solid fa-bullhorn"></i> <strong>運営メンバー募集中！</strong><br>
+                「こんなテーマをやってほしい！」「企画に関わりたい！」という方は運営チームまでご連絡ください！一緒にHRC47を盛り上げましょう！
+            </div>
+        </div>
+        <div class="footer-organizer">
+            主催：HRC47（日本病院総合診療学会 研修医支援プラットフォーム） / 日本病院総合診療学会 学生支援部会
+        </div>
+    </footer>
+
 </div>
 
 </body>
