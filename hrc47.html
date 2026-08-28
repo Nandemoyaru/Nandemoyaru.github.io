@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>総合診療がみえる！ | 研修医向け総合診療レクチャーシリーズ</title>
     <!-- Google Fonts & FontAwesome Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -259,34 +259,53 @@
             background: #FAFBFD;
         }
 
-        .curriculum-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .curriculum-list {
+            display: flex;
+            flex-direction: column;
             gap: 10px;
         }
 
         .curriculum-item {
             background: #ffffff;
             border: 1px solid var(--border-color);
-            border-left: 4px solid var(--logo-blue);
+            border-left: 5px solid var(--logo-blue);
             border-radius: 6px;
-            padding: 10px 12px;
+            padding: 12px 16px;
             display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-dark);
+            align-items: flex-start;
+            gap: 12px;
         }
 
-        .curriculum-item i {
-            color: var(--logo-green);
-            font-size: 0.8rem;
-            flex-shrink: 0;
+        .curriculum-num {
+            background: var(--primary-navy);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+
+        .curriculum-content {
+            flex: 1;
+        }
+
+        .curriculum-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary-navy);
+            margin-bottom: 2px;
+        }
+
+        .curriculum-detail {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
         }
 
         .curriculum-note {
-            margin-top: 12px;
+            margin-top: 14px;
             font-size: 0.75rem;
             color: var(--text-muted);
             text-align: right;
@@ -482,9 +501,8 @@
             .subtitle { font-size: 0.85rem; }
             .series-title { font-size: 2.1rem; }
 
-            .overview-grid, .points-grid, .curriculum-grid {
+            .overview-grid, .points-grid {
                 flex-direction: column;
-                grid-template-columns: 1fr;
                 gap: 12px;
             }
 
@@ -506,9 +524,9 @@
     <header class="header">
         <div class="header-top">
             <div class="logo-placeholder">
-                <i class="fa-solid fa-hospital-user"></i> HRC47
+                <i class="fa-solid fa-hospital-user"></i> HRC47 LOGO
             </div>
-            <span class="badge-hrc">日本病院総合診療学会 研修医支援プラットフォーム</span>
+            <span class="badge-hrc">日本病院総合診療医学会 研修医支援プラットフォーム</span>
         </div>
         <div class="catchphrase">
             <i class="fa-solid fa-graduation-cap"></i> 研修医のための総合診療レクチャーシリーズ開講！
@@ -561,8 +579,8 @@
                 <div class="point-icon">
                     <i class="fa-solid fa-book-open"></i>
                 </div>
-                <div class="point-title">体系的なカリキュラム</div>
-                <div class="point-desc">ルーブリック（学習到達指標）に基づき、マインドセットから具体的な診断・アプローチまで網羅。</div>
+                <div class="point-title">体系的なプログラム</div>
+                <div class="point-desc">学問の全体像を踏まえつつ入門編として必須な項目を厳選！マインドセットから具体的なスキルまで網羅しています。</div>
             </div>
             <div class="point-card">
                 <div class="point-icon">
@@ -585,20 +603,86 @@
     <section class="section-padding curriculum-bg">
         <div class="section-header">
             <i class="fa-solid fa-list-check"></i>
-            <h2 class="section-title">カリキュラム案（ルーブリック準拠）</h2>
+            <h2 class="section-title">勉強会内容（全12回）</h2>
         </div>
-        <div class="curriculum-grid">
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 病院総合診療の紹介</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 地域医療の紹介</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 患者中心の医療</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 診断学の基本</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 不確実性/複雑性の基本</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 人生/生活の見かた</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> SDHとアドボカシー</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 家族志向ケア初級編</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 継続性</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> 総合診療と領域診療</div>
-            <div class="curriculum-item"><i class="fa-solid fa-circle-check"></i> プロフェッショナリズム</div>
+        <div class="curriculum-list">
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 0 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">イントロダクション</div>
+                    <div class="curriculum-detail">総合診療学の概略</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 1 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">患者中心の医療と診断学</div>
+                    <div class="curriculum-detail">「病気も人も見る医療」の基本姿勢を学ぶ。</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 2 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">診断学の基本と臨床推論</div>
+                    <div class="curriculum-detail">効率的かつ効果的な診断プロセスと基本理論</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 3 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">不確実性との向き合い方</div>
+                    <div class="curriculum-detail">未分化な状態、多疾患併存状態への対応方法</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 4 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">患者の人生や生活の扱い方</div>
+                    <div class="curriculum-detail">「バイオグラフィー」の概念とケアへの活用</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 5 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">健康の社会的決定要因(SDH)</div>
+                    <div class="curriculum-detail">患者の権利擁護と社会リソースの活用法</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 6 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">家族志向ケア 入門編</div>
+                    <div class="curriculum-detail">患者を支える家族システムとの協働</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 7 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">継続性を活かした医療</div>
+                    <div class="curriculum-detail">診療の場を超えて繋がりを保つ方法</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 8 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">プロフェッショナリズム</div>
+                    <div class="curriculum-detail">意思決定と総合診療医としてのスタンス</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 9 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">生涯学習①</div>
+                    <div class="curriculum-detail">「深く診る」と「広く診る」の両立</div>
+                </div>
+            </div>
+            <div class="curriculum-item">
+                <span class="curriculum-num">第 10 回</span>
+                <div class="curriculum-content">
+                    <div class="curriculum-title">生涯学習②</div>
+                    <div class="curriculum-detail">家庭医療学、病院総診、地域医療</div>
+                </div>
+            </div>
         </div>
         <div class="curriculum-note">※テーマは参加者の興味や状況に応じて柔軟に変更する場合があります。</div>
     </section>
@@ -610,13 +694,13 @@
             <h2 class="section-title">講師紹介</h2>
         </div>
         <div class="instructor-card">
-            <div class="instructor-role">メイン講師</div>
-            <div class="instructor-name">天野 雅之 医師（南奈良総合医療センター 総合診療科 部長）</div>
+            <div class="instructor-role">メイン講師 ＆ コーディネーター</div>
+            <div class="instructor-name">天野 雅之 医師</div>
             <div class="instructor-bio">
-                教育研修センターで後進医師の育成にも情熱を注いでおられます。奈良県南部のへき地の診療所の所長と基幹病院の勤務を兼務し、病診連携の画期的な改革を成し遂げた経験もお持ちです。また、MBAの学位を取得し、総合診療の中身（Generalism）を体系立てて“見える化”することにも取り組んでいらっしゃいます。
+                病院での総合診療実践と医学教育に情熱を注いでおられます。へき地診療所の所長やビジネススクール卒業(MBA)のご経験もお持ちです。診断学や総合診療学の研究に従事され、総合診療の中身（Generalism）を体系立てで"見える化”することにも取り組んでいらっしゃいます。総合診療系の数多くの専門医資格もお持ちであり、勉強会のコーディネートとメイン講師をお願いさせていただきました。
             </div>
             <div class="instructor-sub">
-                <i class="fa-solid fa-users"></i> 日本病院総合診療学会のチームメンバーも多数登壇！
+                <i class="fa-solid fa-users"></i> 日本病院総合診療医学会のスペシャルチームメンバーも多数登壇！
             </div>
         </div>
     </section>
@@ -683,7 +767,67 @@
             </div>
         </div>
         <div class="footer-organizer">
-            主催：HRC47（日本病院総合診療学会 研修医支援プラットフォーム） / 日本病院総合診療学会 学生支援部会
+            主催：HRC47（日本病院総合診療医学会 研修医支援プラットフォーム） / 日本病院総合診療医学会 学生支援部会
+        </div>
+    </footer>
+
+</div>
+
+</body>
+</html>                <span class="step-number">STEP 01</span>
+                <div class="step-title">HRC47への参加登録（Googleフォーム）</div>
+                <p class="step-content">
+                    公式紹介サイトにアクセスし、ページ内にある参加登録用Googleフォームへ回答を行ってください。
+                </p>
+                <a href="https://hgm-japan.com/hrc47/" target="_blank" rel="noopener noreferrer" class="btn">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> HRC47 公式紹介サイトを開く
+                </a>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- STEP 2 -->
+            <div class="step-card">
+                <span class="step-number">STEP 02</span>
+                <div class="step-title">LINEグループへの参加</div>
+                <p class="step-content">
+                    Googleフォーム送信完了画面（または案内）に表示されるリンクから、HRC47専用のLINEグループに参加します。
+                </p>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- STEP 3 -->
+            <div class="step-card">
+                <span class="step-number">STEP 03</span>
+                <div class="step-title">Zoom参加登録 ＆ 当日受講</div>
+                <p class="step-content">
+                    LINEグループ内の「ノート」に記載されている勉強会用Zoom登録リンクから事前登録を行ってください。<br>
+                    登録完了後に届くWebinar用URLより、当日レクチャーへご参加いただけます。
+                </p>
+            </div>
+        </div>
+
+        <div class="note-box">
+            <strong>事前準備のお願い：</strong><br>
+            Zoom登録リンクはLINEグループのノートに固定されています。レクチャー開始前までに登録を完了させておいてください。
+        </div>
+    </section>
+
+    <!-- 7. フッター＆アクションエリア -->
+    <footer class="cta-footer">
+        <div class="cta-box">
+            <div class="cta-headline">HRC47に加入して、一生モノの視点を手に入れよう！</div>
+            <div class="cta-subtext">
+                加入すれば、本レクチャーのアーカイブ動画・資料もすべて見放題です。
+            </div>
+            <div class="member-callout">
+                <i class="fa-solid fa-bullhorn"></i> <strong>運営メンバー募集中！</strong><br>
+                「こんなテーマをやってほしい！」「企画に関わりたい！」という方は運営チームまでご連絡ください！一緒にHRC47を盛り上げましょう！
+            </div>
+        </div>
+        <div class="footer-organizer">
+            主催：HRC47（日本病院総合診療医学会 研修医支援プラットフォーム） / 日本病院総合診療医学会 学生支援部会
         </div>
     </footer>
 
