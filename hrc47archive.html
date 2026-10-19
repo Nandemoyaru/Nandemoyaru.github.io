@@ -200,6 +200,66 @@
             color: var(--logo-blue);
             font-size: 1.3rem;
         }
+        /* 講義資料ドライブセクション */
+.materials-section {
+    background: #FFFFFF;
+}
+
+.materials-card {
+    background: linear-gradient(135deg, #F0F8FF 0%, #E6F3FC 100%);
+    border: 2px dashed var(--logo-blue);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 114, 206, 0.08);
+}
+
+.materials-icon {
+    font-size: 2.2rem;
+    color: var(--logo-blue);
+    margin-bottom: 8px;
+}
+
+.materials-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary-navy);
+    margin-bottom: 6px;
+}
+
+.materials-desc {
+    font-size: 0.88rem;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.btn-drive {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--logo-green);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 12px 28px;
+    border-radius: 6px;
+    text-decoration: none;
+    box-shadow: 0 3px 6px rgba(0, 176, 116, 0.25);
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-drive:hover {
+    background-color: #009663;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.materials-note {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
 
         /* 3. レクチャーの3つのポイント */
         .points-grid {
@@ -589,6 +649,25 @@
             「『総合診療って、結局何なの？』その疑問に、体系的な学びで応えます。」
         </div>
     </header>
+    <!-- 講義資料・アーカイブセクション -->
+    <section class="section-padding materials-section">
+        <div class="materials-card">
+            <div class="materials-icon">
+                <i class="fa-brands fa-google-drive"></i>
+            </div>
+            <div class="materials-title">全回分の講義スライド・配布資料（PDF）</div>
+            <p class="materials-desc">
+                勉強会で使用したレクチャースライドや復習用PDFをまとめて保管しています。<br>
+                予習・復習や日々の臨床での振り返りにご活用ください。
+            </p>
+            <a href="https://drive.google.com/file/d/1heGnTYo-EyFB6EE92Pqq-wSfPB7j2VWe/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="btn-drive">
+                <i class="fa-solid fa-folder-open"></i> Googleドライブで資料を見る
+            </a>
+            <div class="materials-note">
+                ※閲覧にはGoogleアカウントへのログインが必要です。
+            </div>
+        </div>
+    </section>
 
     <!-- 4. カリキュラムエリア -->
     <section class="section-padding curriculum-bg">
